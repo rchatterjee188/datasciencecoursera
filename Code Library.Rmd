@@ -128,15 +128,15 @@ sessionInfo() #R info version, packages
 #   library(devtools)
 #   install_github("author/package") #installs package
 
-library(ggplot2)# Load package, careful of dependencies
-installed.packages() #check installed packages
-library() #alternate
-old.packages(repos = "http://cran.us.r-project.org") #check packages to update
-update.packages(repos = "http://cran.us.r-project.org") #update all packages
-install.packages("ggplot2") #to update single package
-detach("package:ggplot2", unload=TRUE) #unload function
-remove.packages("ggtree") #remove package
-help(package = "ggplot2") #package info
-browseVignettes("ggplot2") #extended help files
+# library(ggplot2)# Load package, careful of dependencies
+# installed.packages() #check installed packages
+# library() #alternate
+# old.packages(repos = "http://cran.us.r-project.org") #check packages to update
+# update.packages(repos = "http://cran.us.r-project.org") #update all packages
+# install.packages("ggplot2") #to update single package
+# detach("package:ggplot2", unload=TRUE) #unload function
+# remove.packages("ggtree") #remove package
+# help(package = "ggplot2") #package info
+# browseVignettes("ggplot2") #extended help files
 
 ```
