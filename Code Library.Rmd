@@ -116,17 +116,17 @@ version #R info version
 sessionInfo() #R info version, packages
 
 # Install from CRAN:
-install.packages("ggplot2", repos = "http://cran.us.r-project.org") #install
-install.packages(c("labeling","tibble"), repos = "http://cran.us.r-project.org") #multiple
+#   install.packages("ggplot2", repos = "http://cran.us.r-project.org") #install
+#   install.packages(c("labeling","tibble"), repos = "http://cran.us.r-project.org") #multiple
 
 # Install from Bioconductor
-install.packages("BiocManager", repos = "https://bioconductor.org/biocLite.R")
-BiocManager::install(c("GenomicFeatures", "AnnotationDbi")) #install package
+#   install.packages("BiocManager", repos = "https://bioconductor.org/biocLite.R")
+#   BiocManager::install(c("GenomicFeatures", "AnnotationDbi")) #install package
 
 # Install from GitHub (need package, author name)
-install.packages("devtools", repos = "http://cran.us.r-project.org") #only once
-library(devtools)
-#install_github("author/package") #installs package
+#   install.packages("devtools", repos = "http://cran.us.r-project.org") #only once
+#   library(devtools)
+#   install_github("author/package") #installs package
 
 library(ggplot2)# Load package, careful of dependencies
 installed.packages() #check installed packages
