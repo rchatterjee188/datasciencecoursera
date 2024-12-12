@@ -1,0 +1,113 @@
+---
+title: "Course Notes"
+author: "Ruhika Chatterjee"
+date: "2024-12-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Intro Information
+
+### Every Data Science Project starts with a question that is to be answered with data
+- That means that forming the question is an important first step in the process.
+- The second step is finding or generating the data you’re going to use.
+- With the question solidified and data in hand, the data are then analyzed first by exploring the data and then often by modeling the data.
+- After drawing conclusions, the project has to be communicated to others.
+- Most projects build off someone else’s work. It’s really important to give credit
+
+### R project: Data, Scripts, Output
+
+### Troubleshooting
+- Check error messages and outputs
+- Talk to your rubber duck
+- https://www.r-project.org/help.html
+- Use help() function and ? command (i.e. help(lm) or help("lm"), or ?lm or ?"lm")
+- Use Google or search.r-project.org 
+- Check forums StackOverflow and CrossValidated
+
+### How to effectively ask questions on forums
+- The question you are trying to answer
+- How you approached the problem, what steps you have already taken
+- What steps will reproduce the problem (including sample data!)
+- What was the expected output
+- What you saw instead (including any error messages you received!)
+- What troubleshooting steps you have already tried
+- Details about your set-up, eg: OS, Rversion, packages
+- Be specific in the title of your questions!
+- Read the forum posting guidelines, ask your question on an appropriate forum!
+- Be explicit, detailed, courteous, and succinct
+- Follow up on the post OR post the solution
+
+# Data Science Essentials
+
+### Types of Questions
+
+- Descriptive: describe or summarize a set of data by generating simple summaries about the samples and their measurements, usually measures of central tendency (eg: mean, median, mode) or measures of variability (eg: range, standard deviations or variance). No interpretation involved.
+- Exploratory: examine or explore the data and find relationships that weren’t previously known, analyzing correlative (not causative) relationships. Allows formulation of hypotheses and can drive the design of future studies and data collection
+- Inferential: use a relatively small sample of data to infer or say something about the population at large through statistical modelling. Finding population-wide estimate and uncertainty using a representative sample.
+- Predictive: use current data to make predictions about future data, or the likelihood of future outcomes, through past patterns of relevant variables. Best models involve more data and simple models, noting that prediction is based on correlative relationship.
+- Causal: see what happens to one variable when we manipulate another variable, looking at the cause and effect of a relationship. Usually uses results of randomized studies that were designed to identify causation, using aggregate results (i.e. causation may not apply to everyone). Data collection is a challenge.
+- Mechanistic: understand the exact changes in variables that lead to exact changes in other variables. In deterministic relationships for simple situations or in those that are nicely modeled by deterministic equations (i.e. only noise in measurement error). Cannot use for inference, only really used in physical or engineering sciences.
+
+### Experimental Design
+- Organizing an experiment so that you have the correct and sufficient data. to clearly and effectively answer your data science question. Ask question, create setup, identify problems or sources of error, collect data.
+- Keep track of independent and dependent variables, decide what variables you will measure, and which you will manipulate to effect changes in other measured variables.
+- Develop your hypothesis, decide sample size.
+- Determine confounders, control for it by measuring confounding variables or fixing the variable. Consider control groups, including blinding to combat placebo effect; randomization to remove confounder bias and systemic error; and replication to measure variability accurately and establish significance. These strategies remove the effect of confounding.
+- Share data and code.
+- Beware of p-hacking. p-value: value that tells you the probability that the results of your experiment were observed by chance, where significance is usually set below 0.05. p-hacking involves testing hypotheses till one reveals a statistically significant p-value.
+
+### Big Data
+Difficulty in volume, velocity, and variety. Also move from structured data (long tables, spreadsheets, or databases with columns and rows of information that you can sum or average or analyse however you like within those confines) to unstructured data. Big data is big, changing, from many sources, and messy. But volume of data can counteract the messiness, changing data allows real-time analysis, can answer more type of questions, can uncover hidden correlations.
+
+
+# Intro to R
+
+- CRAN: https://cran.r-project.org/
+- RStudio: https://posit.co/products/open-source/rstudio/
+- File Types: RScript, RMarkdown
+- R Project (folder/directory for organization): Create directories: Data, Scripts, Output
+
+### R Markdown
+- https://rmarkdown.rstudio.com/
+- **bold** and *italics*
+- Parameter {r Markdown, echo = False} to not print code
+- Ctrl+Alt+I (Windows) to initiate code block
+``` {r}
+#install.packages("rmarkdown")
+```
+
+
+# Version Control
+- GitHub Repository Instruction: https://docs.github.com/en/get-started/start-your-journey/hello-world
+- Git Download: https://git-scm.com/downloads
+
+### To configure Git in Git Bash
+- git config --global user.name "Jane Doe"
+- git config --global user.email janedoe@gmail.com
+- git config --list           confirm changes
+- exit                        exit Terminal
+
+### Link
+
+- Link RStudio to Git: Tools > Global Options > Git/SVN then confirm directory
+- Link to GitHub: "Create RSA Key", close, “View public key”, in GitHub Account Settings > “SSH and GPG keys” > “New SSH key”, paste, title
+
+### Linking Repositories
+- To Link Directly: Create repository in GitHub, copy URL, create new project in RStudio (Version control), Git as VC software, paste URL
+- Stage, commit, push (with a message explaining what changed, why and by whom)
+Save, Git Tab check file as "Staged", click Commit, Commit message, Commit, Push
+- Clone Repository: RStudio File > New Project > Version Control, Git, URL, location, create
+
+### Add existing Project to GitHub
+in Git Bash
+
+- cd ~/dir/name/of/path/to/file #navigate Terminal
+- git init #initializes as git repo
+- git add . #adds directory files to repo
+- git commit -m "Initial commit" #commit
+
+in GitHub: create repo (same name, no .readme, .gitignore, license), select “Push an existing repository from the command line”, copy the code, reopen all
