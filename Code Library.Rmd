@@ -100,14 +100,25 @@ dimnames(m) <- list(c("a","b"),c("c","d")) # each dimension has a name for matri
 # Basic R Functions
 ``` {r}
 # managing working directory and work space
-getwd() # find working directory
-read.csv("hw1_data.csv") # reads in data from csv file named from directory
-dir() # output files in directory
+x <- getwd() # find working directory
+dir.create("testdir") # create a directory, args: dir name, for nested recursive = true
+setwd("testdir") # set working dir
+file.create("mytest.R") # create file in wd
+file.exists("mytest.R") # check if file exists in wd
+file.info("mytest.R") # file metadata, use $ operator to grab specific items
+file.rename("mytest.R","mytest2.R") # rename
+file.copy("mytest2.R","mytest3.R") # copy file
+file.remove("mytest2.R") # remove file
+file.path("mytest3.R") # relative path
+setwd(x)
+
+dir() # output files in directory. Also list.files().
 ls() # prints the objects in work space
 rm(list=ls()) # clear workspace
 version #R info version
 sessionInfo() #R info version, packages
 source("myCode.R") # load code into console
+args(ls()) # get arguments for a function
 
 # Basic Functions
 # add numbers, vectors (element-by-element or recycling)
