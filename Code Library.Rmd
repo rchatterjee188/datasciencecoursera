@@ -46,6 +46,11 @@ x <- vector("numeric", length = 10) # create vector of one type, args: class, le
 x <- c(1,2,3,4) # creates vector of common denominator class with given values
 x <- 1:20 # vector sequence of 20 elements
 
+# vectorized operations
+x <- 1:4; y <- 6:9 # different length vectors
+x + y # add the elements of the vectors, all operators work
+x > 2 # returns logical vector, >= or == or any of the logical expressions work
+
 # lists
 # vector capable of carrying different classes
 x <- list(1, "a", TRUE, 1+4i) # vector of vectors
@@ -54,12 +59,18 @@ x <- list(1, "a", TRUE, 1+4i) # vector of vectors
 # vector of single class with dimensions (an attribute of integer vector len 2)
 x <- matrix(nrow=2,ncol=3) # empty matrix of given dimensions
 x <- matrix(c(1, 2, 3, 4, 5, 6, 7, 8), nrow = 4, ncol = 2) # creates matrix of given dimensions with values assigned, created by column
+y <- matrix(rep(10,4),2,2) # creates matrix of 4 10s
 
 x <- 1:10
 dim(x) <- c(2,5) # creates matrix out of vector with dimension 2 rows x 5 columns
 
 cbind(1:3,10:12) # creates matrix out of values in vector args, adding by column (1st arg = 1st col)
 rbind(1:3,10:12) # same but using rows
+
+# vectorized operation
+x <- matrix(1:4,2,2); y <- matrix(rep(10,4),2,2)
+x * y # element wise multiplication, for all operators
+x %*% y # matrix multiplication
 
 # factors
 # self-describing type of vector representing categorical data, ordered or unordered (labels)
@@ -68,19 +79,19 @@ x <- factor(c("male","female","female","female","male")) # character vector with
 # data frames
 # stores tabular data, stored as lists of same length where each element is a column, length of element is number of rows. Different classes possible
 x <- data.frame(foo=1:4, bar=c(T,T,F,F)) # creates data frame 2 columns foo and bar, 4 rows unnamed
-x <- read.table(hw1_data.csv) # read in data from file
-x <- read.csv(hw1_data.csv) # same
-row.names() # get and set row names
+x <- read.table(file = "hw1_data.csv", header = TRUE, sep = ",") # read in data from file
+x <- read.csv("hw1_data.csv") # same
+row.names(x) # get and set row names
 nrow(x) # number of rows
 ncol(x) # number of columns
-data.matrix() # converts data frame to matrix, coercion
+data.matrix(x) # converts data frame to matrix, coercion
 
 # names attribute
 x <- 1:3
 names(x) # is null
 names(x) <- c("foo","bar","norf") #now not numbered vector but named, print x and names(x) with names
 # also for lists, names vectors not items
-m <- matrix(1:4,nrow = 2, col = 2)
+m <- matrix(1:4,nrow = 2, ncol = 2)
 dimnames(m) <- list(c("a","b"),c("c","d")) # each dimension has a name for matrices, rows names then columns
 
 ```
@@ -93,12 +104,22 @@ getwd() # find working directory
 read.csv("hw1_data.csv") # reads in data from csv file named from directory
 dir() # output files in directory
 ls() # prints the objects in work space
+rm(list=ls()) # clear workspace
+version #R info version
+sessionInfo() #R info version, packages
 source("myCode.R") # load code into console
+
+# Basic Functions
+# add numbers, vectors (element-by-element or recycling)
+5+7 # basic arithmetic operations all work +,-,*,/,^
+sqrt(4) # square root
+abs(-1:2) # absolute value
 
 # Input and Evaluation
 x <- 1 # assignment operator, evaluates and returns
 print(x) # print value as vector
 x # auto-prints
+# in console, press Tab for auto-completion
 
 # Functions on Objects
 attributes(x) # function to return or modify attributes of object
@@ -143,10 +164,7 @@ myaddedfunction(4:10)
 
 - Base packages: utils, stats, datasets, graphics, grDevices, grid, methods, tools, parallel, compiler, splines, tcltk, stats4.  
 - Recommended packages: boot, class, cluster, codetools, foreign, KernSmooth, lattice, mgcv, nime, rpart, survival, MASS, spatial, nnet, Matrix.  
-``` {r}
-version #R info version
-sessionInfo() #R info version, packages
-
+``` {r packages}
 # Install from CRAN:
 #   install.packages("ggplot2", repos = "http://cran.us.r-project.org") #install
 #   install.packages(c("labeling","tibble"), repos = "http://cran.us.r-project.org") #multiple
@@ -179,8 +197,8 @@ sessionInfo() #R info version, packages
 ``` {r workingData}
 
 # Read data into R
-x <- read.table(hw1_data.csv) #reading tabular data from text files, return data frame. Args: file (name, connection), header (logical if header line present), sep (string indicating column separator), colClasses (character vector of class of each column), nrows (number of rows), comment.char (character string indicating comment character), skip (number of lines to skip from beginning), stringsAsFactors (logical if character variables coded as factors, default true). Efficient. Default separator " " and header = FALSE. Check help page to optimize for large datasets, set comment.char = "" to optimize if no comments present, use colClasses, nrow (memory).
-x <- read.csv(hw1_data.csv) # Same but default separator is ", "  and header = TRUE
+x <- read.table("hw1_data.csv") #reading tabular data from text files, return data frame. Args: file (name, connection), header (logical if header line present), sep (string indicating column separator), colClasses (character vector of class of each column), nrows (number of rows), comment.char (character string indicating comment character), skip (number of lines to skip from beginning), stringsAsFactors (logical if character variables coded as factors, default true). Efficient. Default separator " " and header = FALSE. Check help page to optimize for large datasets, set comment.char = "" to optimize if no comments present, use colClasses, nrow (memory).
+x <- read.csv("hw1_data.csv") # Same but default separator is ", "  and header = TRUE
 write.table()
 
 # help read.table with colClasses with smaller sample
@@ -189,7 +207,7 @@ classes <- sapply(initial, class)
 tabAll <- read.table("hw1_data.csv", colClasses = classes)
 
 lines <- readLines # reading lines of text file, return character vector
-wirteLines()
+writeLines()
 
 # editable textual format retains metadata, helpful for version control, corruption fixable, memory cost
 dget(coded.R) # reading R objects deparsed into text files
@@ -201,5 +219,50 @@ load() # read in saved workspace read binary objects into R
 save()
 unserialize() # read single R objects in binary form
 serialize()
+
+# Interface to outside world
+file(description = "hw1_data.csv") # open connection to standard, uncompressed file. Helps for partial file reading. description = file name, open = "r"(read only), "w" (writing and initializing new file), "a" (appending), "rb"/"wb"/"ab" in binary (Windows)
+gzfile() # connection to file w compression gzip
+bzfile() # connection to file w compression bzip2
+url("http://www.jhsph.edu", "r") # connection to webpage
+close() # to end connection
+
+# Subsetting R Objects
+x <- c("a","b","c","c","d","a")
+x[1] # more than one element extracted, returns same class as the original, numeric/logical index
+x[1:4] # sequence of num index
+x[x>"a"] # logical index
+u <- x > "a" # create logical vector
+x[u] # same as x[x>"a"]
+
+x <- list(foo = 1:4, bar = 0.6, baz = "hello")
+x[1] # list containing first element
+x[[1]] # extract from list/data frame, single element, class can change. Ex, numerical vector returned
+x$bar # like [[]] but by name. Ex, return num vector 0.6. Equivalent to x[["bar"]]. Expression x["bar"] returns list of bar. Can use partial matching (x$f = x$foo = x[["f", exact = FALSE]]).
+x[c(1,3)] # multiple object extraction from list, returns list
+name = "foo"
+x[[name]] # must be used if using computed index
+x[[1][3]] # return element in element in object
+x[[c(1,3)]]
+
+# Subsetting Matrix
+x <- matrix(1:6, 2, 3)
+x [1,2] # returns vector len 1, different that x[2,1]. Get matrix using arg drop = FALSE.
+x[1,] # get num vector of first row, can also get col x[,2]. drop = FALSE also works
+
+# Removing NA values
+x <- c(1,2,NA,4,NA,5)
+bad <- is.na(x) # logical vector indicating presence of NA
+x[!bad] # removes NA values
+
+x <- c(1,2,NA,4,NA,5) # for two vectors
+y <- c("a","b",NA,"d",NA,"f")
+good <- complete.cases(x,y) # logical vectors where there is no NA in either list
+x[good]
+y[good]
+
+x <- read.csv("hw1_data.csv") # for data frames
+goodVals <- complete.cases(x) # complete rows in the data frame
+x[good,]
 
 ```

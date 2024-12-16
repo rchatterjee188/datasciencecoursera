@@ -97,7 +97,6 @@ Difficulty in volume, velocity, and variety. Also move from structured data (lon
 
 
 ### R Markdown
-- # indicates a comment  
 - <https://rmarkdown.rstudio.com/>  
 - **bold** and *italics*  
 - Parameter {r Markdown, echo = False} to not print code  
@@ -142,6 +141,16 @@ in GitHub: create repo (same name, no .readme, .gitignore, license), select “P
 ### Swirl
 <https://swirlstats.com/>
 ``` {r swirl}
-library("swirl")
-Swirl()
+# install.packages("swirl", repos = "http://cran.us.r-project.org")
+# install_from_swirl("R Programming") # install course
+# library("swirl") # load interactive
+# Swirl() # launch interactive
+# help.start() # help
+# play() # to leave lesson
+# nxt() # to return to lesson
+# Esc to return to R prompt
+# bye() # exit and save
+# skip() # skip current question
+# main() # swirl main menu
+# info() # display options
 ```

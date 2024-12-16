@@ -357,6 +357,8 @@ display: none;
 </div>
 
 
+<p>Notes taken from Johns Hopkins University Coursera course series Data
+Science Specialization.</p>
 <div id="intro-information" class="section level1">
 <h1>Intro Information</h1>
 <div id="every-data-science-project-starts-with-a-question-that-is-to-be-answered-with-data" class="section level3">
@@ -427,6 +429,21 @@ appropriate forum!<br />
 <li>Be explicit, detailed, courteous, and succinct<br />
 </li>
 <li>Follow up on the post OR post the solution</li>
+</ul>
+</div>
+<div id="good-to-know-know-thy-system" class="section level3">
+<h3>Good to know: Know Thy System</h3>
+<ul>
+<li>How much memory is available?<br />
+</li>
+<li>Applications in use?<br />
+</li>
+<li>Other users in the system?<br />
+</li>
+<li>OS? 32 or 64-bit?<br />
+</li>
+<li>memory used for numeric data frame = 2 * rows * columns *
+8byte/numeric / 2^20 bytes/MB / 2^10 GB/MB</li>
 </ul>
 </div>
 </div>
@@ -513,13 +530,55 @@ answer more type of questions, can uncover hidden correlations.</p>
 <ul>
 <li>CRAN: <a href="https://cran.r-project.org/" class="uri">https://cran.r-project.org/</a><br />
 </li>
-<li>RStudio: <a href="https://posit.co/products/open-source/rstudio/" class="uri">https://posit.co/products/open-source/rstudio/</a><br />
-</li>
-<li>File Types: RScript, RMarkdown<br />
-</li>
-<li>R Project (folder/directory for organization): Create directories:
-Data, Scripts, Output</li>
+<li>RStudio: <a href="https://posit.co/products/open-source/rstudio/" class="uri">https://posit.co/products/open-source/rstudio/</a></li>
 </ul>
+<div id="history-of-r" class="section level3">
+<h3>History of R</h3>
+<ul>
+<li>R is a dialect of S - language developed by John Chambers at Bell
+Labs for statistical analysis (lots of corporate acquisitions and
+versions)<br />
+</li>
+<li>Developed to allow users to progress to programmers<br />
+</li>
+<li>R developed in 1991 at Aukland, New Zealand by Ihaka and
+Gentleman.<br />
+</li>
+<li>Similar syntax and superficial semantics to S, run on any standard
+OS, frequent releases. Lean base software, sophisticated graphics,
+interactive with powerful programming language, active community.<br />
+</li>
+<li>Free and freedom to run program as desired, study and adapt program,
+redistribute copies, and improve program.<br />
+</li>
+<li>Drawbacks: based on 40 year old tech, lacking dynamic/3D graphics,
+functionality based on consumer demand and user contribution, objects
+stored on physical memory, not always ideal.</li>
+</ul>
+</div>
+<div id="helpful-books" class="section level3">
+<h3>Helpful Books</h3>
+<ul>
+<li>Chambers (2008). <em>Software for Data Analysis</em>,
+Springer.<br />
+</li>
+<li>Chambers (1998). <em>Programming with Data</em>, Springer.<br />
+</li>
+<li>Venables &amp; Ripley (2002). <em>Modern Applied Statistics with
+S</em>, Springer.<br />
+</li>
+<li>Venables &amp; Ripley (2000). <em>S Programming</em>,
+Springer.<br />
+</li>
+<li>Pinheiro &amp; Bates (2000). <em>Mixed-Effects Models in S and
+S-PLUS</em>, Springer.<br />
+</li>
+<li>Murrell (2005). <em>R Graphics</em>, Chapman &amp; Hall/CRC
+Press.<br />
+</li>
+<li>Springer’s series <em>Use R!</em></li>
+</ul>
+</div>
 <div id="r-markdown" class="section level3">
 <h3>R Markdown</h3>
 <ul>
@@ -596,6 +655,22 @@ Control, Git, URL, location, create</li>
 <p>in GitHub: create repo (same name, no .readme, .gitignore, license),
 select “Push an existing repository from the command line”, copy the
 code, reopen all</p>
+</div>
+<div id="swirl" class="section level3">
+<h3>Swirl</h3>
+<p><a href="https://swirlstats.com/" class="uri">https://swirlstats.com/</a></p>
+<pre class="r"><code># install.packages(&quot;swirl&quot;, repos = &quot;http://cran.us.r-project.org&quot;)
+# install_from_swirl(&quot;R Programming&quot;) # install course
+# library(&quot;swirl&quot;) # load interactive
+# Swirl() # launch interactive
+# help.start() # help
+# play() # to leave lesson
+# nxt() # to return to lesson
+# Esc to return to R prompt
+# bye() # exit and save
+# skip() # skip current question
+# main() # swirl main menu
+# info() # display options</code></pre>
 </div>
 </div>
 
