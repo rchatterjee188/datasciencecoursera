@@ -594,6 +594,18 @@ Press.<br />
 </ul>
 <pre class="r"><code>#install.packages(&quot;rmarkdown&quot;)</code></pre>
 </div>
+<div id="coding-standards" class="section level3">
+<h3>Coding Standards</h3>
+<ul>
+<li>Write text in text editor<br />
+</li>
+<li>Indent your code (4-8)<br />
+</li>
+<li>Limit width of code (80 cols)<br />
+</li>
+<li>Limit length of function (1 activity, single page)</li>
+</ul>
+</div>
 </div>
 <div id="version-control" class="section level1">
 <h1>Version Control</h1>
@@ -672,6 +684,67 @@ code, reopen all</p>
 # main() # swirl main menu
 # info() # display options</code></pre>
 </div>
+</div>
+<div id="scoping" class="section level1">
+<h1>Scoping</h1>
+<pre class="r"><code>search() # provides list for environments</code></pre>
+<pre><code>## [1] &quot;.GlobalEnv&quot;        &quot;package:stats&quot;     &quot;package:graphics&quot; 
+## [4] &quot;package:grDevices&quot; &quot;package:utils&quot;     &quot;package:datasets&quot; 
+## [7] &quot;package:methods&quot;   &quot;Autoloads&quot;         &quot;package:base&quot;</code></pre>
+<ul>
+<li>Global environment is the workspace.<br />
+</li>
+<li>Scoping begins in global environment ends in base package, order
+depends on configuration of setup (loading package), inserts in slot 2
+in reverse order.<br />
+</li>
+<li>Separate namespace for function and non-function objects.<br />
+</li>
+<li>Functions: Scoping in R is lexical/static scoping (also Python,
+Lisp). Local variables assigned in the body of a function. Formal
+arguments defined in args passed. Free variable not explicitly defined,
+in R looks in environment where function was defined then parent
+environments till reach global environment/namespace of package, then
+down from top-level environment to empty environment. Finally throws
+error if nothing found.<br />
+</li>
+<li>Dynamic scoping looks in calling environment first.<br />
+</li>
+<li>Environment: collection of symbol-value pairs.<br />
+</li>
+<li>Every environment (except empty environment) has parent environment
+(can have multiple children).<br />
+</li>
+<li>Take function and associate with environment is a function
+closure.<br />
+</li>
+<li><strong>THEREFORE</strong>: define free variables in workspace and
+define function in global environment. EXCEPT when defining functions
+inside functions.</li>
+<li>R objects must be stored in memory. Functions carry pointer to
+defining environment.<br />
+</li>
+<li>Optimization: pass function to functions optim, nlm, optimize.
+Object function depends on parameters and data.<br />
+</li>
+<li><strong>Course 2, Module 2, scoping Rules- Optimization
+Example</strong><br />
+</li>
+<li>Example:</li>
+</ul>
+<pre class="r"><code>make.power &lt;- function(n) {
+  pow &lt;- function(x) { # x is free variable
+    x^n
+  }
+  pow # returns function as object
+}
+
+cube &lt;- make.power(3)
+square &lt;- make.power(2)
+cube(3)</code></pre>
+<pre><code>## [1] 27</code></pre>
+<pre class="r"><code>square(3)</code></pre>
+<pre><code>## [1] 9</code></pre>
 </div>
 
 

@@ -103,6 +103,29 @@ vect <- c(foo = 11, bar = 2, norf = NA) # adds elements with names to vector dir
 # also for lists, names vectors not items
 m <- matrix(1:4,nrow = 2, ncol = 2)
 dimnames(m) <- list(c("a","b"),c("c","d")) # each dimension has a name for matrices, rows names then columns
+```
+
+``` {r datetime}
+# Dates and Times
+birthday <- as.date("1970-01-01") # dates are date class defined by converting character string, year-month-day, stored as number of days since 1970-01-01 (previous is negative)
+
+currentTime <- Sys.time()# time by POSIXct(large integer vector, useful in dataframe) or POSIXlt(list, other info stored like day) class, stored internally as number of seconds since 1970-01-01
+timedefined <- as.POSIXct("2012-10-25 06:00:00") # convert char vector, can define timezone
+cTConvert <- as.POSIXlt(currentTime) # reclass, works other way
+
+datestring <- c("January 10,2012 10:40", "December 9, 2011 9:10")
+x <- strptime(datestring, "%B %d, %Y %H:%M") # Convert character vector to POSIXlt by defining format (format string)
+x
+
+Sys.time() # get current time as POSIXct
+weekdays(birthday) # return day of week, date or time classes
+months(birthday) # return month on date or time
+quarters(birthday) # return quarter of date or time
+
+# Operations
+# CANNOT MIX CLASSES - convert
+# add and subtract dates, compare dates
+x[1]-x[2] # time difference, track of discrepancies (i.e. daylightsavings, timezones, leap time, etc)
 
 ```
 
@@ -153,6 +176,7 @@ x # auto-prints
 # Random number generation
 y <- rnorm(1000) # generate vector of 1000 numbers that are standard normal distribution.
 y <- sample(1:6,3) # random selection of 3 elements from array
+coin <- rbinom(1,1,0.5) # simulating coin flip
 
 # Functions on Objects
 class(x) # determine class of object
@@ -178,22 +202,164 @@ is.nan() # output logical vector of length of input
 
 ```
 
+``` {r controlfunctions}
+# control execution of program
+
+# if,else loops
+y <- if(x>3){ # testing condition
+  10
+} else if(x > 0) { # can not have or multiple
+  5
+} else{ # can not have, at end
+  0
+}
+
+if(x-5 == 0){
+  y <- 0
+} else{
+  y <- 2
+}
+
+# for loops
+for(i in 1:10) {# execute loop fixed number of times. Args iterator variable and vector(inc seq) or list
+  print(i)
+}
+
+x <- c("a","b","c","d")
+for(i in 1:4){
+  print(x[i])
+}
+for(i in seq_along(x)){
+  print(x[i])
+}
+for(letter in x){
+  print(letter)
+}
+for(i in 1:4) print(x[i])
+
+x <- matrix(1:6,2,3)
+for(i in seq_len(nrow(x))) { # nested, don't use more than 2-3 for readability
+  for(j in seq_len(ncol(x))) {
+    print(x[i,j])
+  }
+}
+
+# while loops
+count <- 0
+while(count < 10){ # loop while condition is true
+  print(count)
+  count <- count + 1
+} # be wary of infinite loops!! when condition cannot be true
+
+z <- 5
+while(z >= 3 & z <= 10){
+  print(z)
+  coin <- rbimon(1,1,0.5)
+  
+  if (coin == 1) z <- z+1
+  else z <- z-1
+}
+
+# Repeat loop
+x0 <- 1; tol <- 1e-8
+repeat { # infinite loop
+  x1 <- rnorm(1)
+  if(abs(x1-x0) <- total) {
+    break # break execution of any loop
+  }
+  else x0 <- x1
+}
+
+# control a loop
+for(i in 1:100) {
+  if(i <= 20) next # skip next iteration of loop
+  else {
+    if (i > 50) break # exit for loop
+  }
+}
+
+# return to exit a function, will end control structure inside function
+
+```
+
 ``` {r defFunctions}
+# stored in txt or R script, functions are R objects. Can pass functions as arguments for other functions, functions can be nested.
+
 myfunction <- function(){ #create a function
   x <- rnorm(100)
   mean(x)
 }
 myfunction() #call created function
 
-myaddedfunction <- function(args){ #create a function with argument
-  x <- args + rnorm(100)
-  mean(x)
+myaddedfunction <- function(x,y){ #create a function with formal arguments x and y
+  x + y + rnorm(100) # implicit return last expression
 }
-myaddedfunction(5)
+myaddedfunction(5,3)
 myaddedfunction(4:10)
+
+# function with default argument if left unspecified, for common cases
+above <- function(x, n = 10){
+  use <- x > n
+  x[use]
+}
+above(1:20) # n is default set to 10
+above(1:20, 12) # n set at 12
+
+columnmean <- function(y, removeNA = TRUE) {
+  nc <- ncol(y)
+  means <- numeric(nc)
+  for(i in 1:nc) means[i] <- mean(y[,i], na.rm = removeNA)
+  means
+}
+
+# Lazy Evaluation: R evaluated statements and arguments as they come
+f <- function (a,b,c){
+  print(a)
+  print(b)
+}
+f(3) # prints a, error for b, no rxn to not having c
+
+# ways to call functions
+# positional matching and naming can be mixed. Partial matching also allowed, if not found uses positional match.
+# named helps for long arg list where most defaults are maintained or if order is hard to remember.
+mydata <- rnorm(100)
+sd(mydata) # default to first argument
+sd(x = mydata)
+sd(x = mydata, na.rm = FALSE)
+sd(na.rm = FALSE, x = mydata)
+sd(na.rm = FALSE, mydata) # remove argument from list, default works on first unspecified arg
+
+# Variable Arguments
+# to extend another function without copying arg list of OG function
+myplot <- function(x,y,type = "l",...) {
+  plot(x,y,type=type,...)
+}
+# or for generic functions passed to methods
+# or when number of args unknown in advance (if at beginning, no positional or partial matching)
+args(paste) # operates on unknown sets of character vectors
+
 
 ```
 
+``` {r lexicalscoping}
+make.power <- function(n) {
+  pow <- function(x) {
+    x^n
+  }
+  pow
+}
+
+cube <- make.power(3)
+square <- make.power(2)
+cube(3)
+square(3)
+
+# Scoping - environments
+search()# provides list of environments
+ls(environment(cube)) # object names in function environment, same for square
+get("n",environment(cube)) # values in function environment, changes for square
+
+```
 
 
 # R Packages

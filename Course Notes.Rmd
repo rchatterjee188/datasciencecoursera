@@ -106,6 +106,12 @@ Difficulty in volume, velocity, and variety. Also move from structured data (lon
 #install.packages("rmarkdown")
 ```
 
+### Coding Standards
+- Write text in text editor  
+- Indent your code (4-8)  
+- Limit width of code (80 cols)  
+- Limit length of function (1 activity, single page)  
+
 
 # Version Control
 - GitHub Repository Instruction:  <https://docs.github.com/en/get-started/start-your-journey/hello-world>  
@@ -153,4 +159,37 @@ in GitHub: create repo (same name, no .readme, .gitignore, license), select “P
 # skip() # skip current question
 # main() # swirl main menu
 # info() # display options
+```
+
+# Scoping
+``` {r scoping}
+search() # provides list for environments
+```
+
+- Global environment is the workspace.  
+- Scoping begins in global environment ends in base package, order depends on configuration of setup (loading package), inserts in slot 2 in reverse order.  
+- Separate namespace for function and non-function objects.  
+- Functions: Scoping in R is lexical/static scoping (also Python, Lisp). Local variables assigned in the body of a function. Formal arguments defined in args passed. Free variable not explicitly defined, in R looks in environment where function was defined then parent environments till reach global environment/namespace of package, then down from top-level environment to empty environment. Finally throws error if nothing found.  
+- Dynamic scoping looks in calling environment first.  
+- Environment: collection of symbol-value pairs.  
+- Every environment (except empty environment) has parent environment (can have multiple children).  
+- Take function and associate with environment is a function closure.  
+- **THEREFORE**: define free variables in workspace and define function in global environment. EXCEPT when defining functions inside functions.
+- R objects must be stored in memory. Functions carry pointer to defining environment.  
+- Optimization: pass function to functions optim, nlm, optimize. Object function depends on parameters and data.  
+- **Course 2, Module 2, scoping Rules- Optimization Example**  
+- Example:
+``` {r lexicalscoping}
+make.power <- function(n) {
+  pow <- function(x) { # x is free variable
+    x^n
+  }
+  pow # returns function as object
+}
+
+cube <- make.power(3)
+square <- make.power(2)
+cube(3)
+square(3)
+
 ```
