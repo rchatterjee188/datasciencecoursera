@@ -85,6 +85,7 @@ Difficulty in volume, velocity, and variety. Also move from structured data (lon
 - Similar syntax and superficial semantics to S, run on any standard OS, frequent releases. Lean base software, sophisticated graphics, interactive with powerful programming language, active community.  
 - Free and freedom to run program as desired, study and adapt program, redistribute copies, and improve program.  
 - Drawbacks: based on 40 year old tech, lacking dynamic/3D graphics, functionality based on consumer demand and user contribution, objects stored on physical memory, not always ideal.  
+- To understand computations in R, two slogans are helpful: 1. Everything that exists is an object. 2. Everything that happens is a function call.  
 
 ### Helpful Books
 - Chambers (2008). *Software for Data Analysis*, Springer.  

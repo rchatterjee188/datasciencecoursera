@@ -106,18 +106,21 @@ dimnames(m) <- list(c("a","b"),c("c","d")) # each dimension has a name for matri
 ```
 
 ``` {r datetime}
-# Dates and Times
-birthday <- as.date("1970-01-01") # dates are date class defined by converting character string, year-month-day, stored as number of days since 1970-01-01 (previous is negative)
+# useful for time-series data (temporal changes) or other temporal info
+# lubridate package by Hadley Wickham
 
-currentTime <- Sys.time()# time by POSIXct(large integer vector, useful in dataframe) or POSIXlt(list, other info stored like day) class, stored internally as number of seconds since 1970-01-01
+# Dates and Times
+birthday <- as.Date("1970-01-01") # dates are date class defined by converting character string, year-month-day, stored as number of days since 1970-01-01 (previous is negative)
+today <- Sys.Date()
+
+currentTime <- Sys.time()# time by POSIXct(large integer vector, useful in dataframe) or POSIXlt(list, other info stored like day) class, stored internally as number of seconds since 1970-01-01 or list, respectively
 timedefined <- as.POSIXct("2012-10-25 06:00:00") # convert char vector, can define timezone
 cTConvert <- as.POSIXlt(currentTime) # reclass, works other way
 
-datestring <- c("January 10,2012 10:40", "December 9, 2011 9:10")
+datestring <- c("January 10, 2012 10:40", "December 9, 2011 9:10")
 x <- strptime(datestring, "%B %d, %Y %H:%M") # Convert character vector to POSIXlt by defining format (format string)
 x
 
-Sys.time() # get current time as POSIXct
 weekdays(birthday) # return day of week, date or time classes
 months(birthday) # return month on date or time
 quarters(birthday) # return quarter of date or time
@@ -125,7 +128,8 @@ quarters(birthday) # return quarter of date or time
 # Operations
 # CANNOT MIX CLASSES - convert
 # add and subtract dates, compare dates
-x[1]-x[2] # time difference, track of discrepancies (i.e. daylightsavings, timezones, leap time, etc)
+currentTime - timedefined # time difference, track of discrepancies (i.e. daylightsavings, timezones, leap time, etc). Can do + and - or <, >, <=, >=, ==, !=.
+difftime(currentTime, timedefined, units = "days") # to specify unit
 
 ```
 
@@ -150,22 +154,30 @@ ls() # prints the objects in work space
 rm(list=ls()) # clear workspace
 version #R info version
 sessionInfo() #R info version, packages
-source("myCode.R") # load code into console
+source("coded.R") # load code into console
 args(ls()) # get arguments for a function
-help(ls()) # access documentation on ls() function
+help(ls) # access documentation on ls() function
 ?ls # same. for operator use ?`:`
 
 # Basic Functions
 # add numbers, vectors (element-by-element or recycling)
-5+7 # basic arithmetic operations all work +, -, *, /, ^. NA in expression returns NA.
+x <- 5 + 7 # basic arithmetic operations all work +, -, *, /, ^, %% (modulus). NA in expression returns NA.
 sqrt(4) # square root
 abs(-1:2) # absolute value
+
 # Logical operators
-5 >= 2 # returns logical. <, >, <=, >=, ==, !=. NA in expression returns NA.
-TRUE | FALSE # OR A|B union, AND A&B intersection, NOT !A negation
+5 >= 2 # returns logical. <, >, <=, >=, ==, !=. NA in expression returns NA. Can also use to compare logical vectors themselves.
+TRUE | FALSE # OR A|B union, AND A&B intersection, NOT !A negation. & operates across vector, && evaluates first element of vector. Order of operations: AND before OR
+isTRUE(6 > 4) # also evaluates logical expression
+xor(5 == 6, !FALSE) # only returns TRUE if one is TRUE, one is FALSE
+which(c(1,2,3,4,5,6) < 2) # returns indices of logical vector where element is TRUE
+any(c(1,2,3,4,5,6) < 2) # returns TRUE if any of the logical index values are TRUE
+all(c(1,2,3,4,5,6) < 2) # returns TRUE only if all the elements of vector are TRUE
+
 # Character functions
 paste(c("My","name","is"),collapse = " ") # join elements into one element, can join multiple vectors with multiple arguments, adds element-by-element with coersion and recycling
 c (c("My","name","is"), "Bob") # add to the vector
+str(unclass(as.POSIXlt(Sys.time()))) # prints list clearly
 
 # Input and Evaluation
 x <- 1 # assignment operator, evaluates and returns
@@ -176,17 +188,21 @@ x # auto-prints
 # Random number generation
 y <- rnorm(1000) # generate vector of 1000 numbers that are standard normal distribution.
 y <- sample(1:6,3) # random selection of 3 elements from array
+ints <- sample(10) # random sample of integers from 1 to 10 without replacement
 coin <- rbinom(1,1,0.5) # simulating coin flip
 
 # Functions on Objects
 class(x) # determine class of object
 attributes(x) # function to return or modify attributes of object
+identical(x,x) # returns logical for if two objects are identical
 length(x) # to specifically get the length of vector
 dim(x) # to get dimensions of matrix, data frame (row x column)
 identical(x,y) # check if objects are identical
 c(0.5,0.8,10) # creates a vector of a certain class otherwise coercion
 -c(0.5,0.8,10) # distributes the negative to all elements of vector
-as.numeric(0:6) # explicit coersion, works on all atomic classes, if not possible converts to NA and warning
+as.numeric(0:6) # explicit coercion, works on all atomic classes, if not possible converts to NA and warning
+mean(c(3,4,5,6,7)) # return mean of numeric vector
+sd(c(3,4,5,6,7)) # returns standard deviation of numeric vector
 
 # Factors functions
 x <- factor(c("male","female","female","female","male")) # can include levels argument to set order (baseline is first) otherwise alphabetical
@@ -197,18 +213,19 @@ unclass(x) # strips class to integer with levels of labels
 # Missing Values
 # represented as NA (missing, with specified class) or NaN (missing or undefined)
 # NaN is NA but NA not always NaN
-is.na() # output logical vector of length of input
-is.nan() # output logical vector of length of input
+is.na(c (1,2,NA,5,6,NA, NA,3, NaN)) # output logical vector of length of input
+is.nan(c (1,2,NaN,5,6,NA, NaN,3)) # output logical vector of length of input
 
 ```
 
 ``` {r controlfunctions}
 # control execution of program
 
+x = 2
 # if,else loops
-y <- if(x>3){ # testing condition
+y <- if(x > 3){ # testing condition
   10
-} else if(x > 0) { # can not have or multiple
+} else if(x > 0 & x <= 3) { # can not have or multiple
   5
 } else{ # can not have, at end
   0
@@ -254,17 +271,17 @@ while(count < 10){ # loop while condition is true
 z <- 5
 while(z >= 3 & z <= 10){
   print(z)
-  coin <- rbimon(1,1,0.5)
+  coin <- rbinom(1,1,0.5)
   
   if (coin == 1) z <- z+1
   else z <- z-1
 }
 
 # Repeat loop
-x0 <- 1; tol <- 1e-8
+x0 <- 0.01; tol <- 1e-3
 repeat { # infinite loop
   x1 <- rnorm(1)
-  if(abs(x1-x0) <- total) {
+  if(abs(x1 - x0) < tol) {
     break # break execution of any loop
   }
   else x0 <- x1
@@ -290,12 +307,14 @@ myfunction <- function(){ #create a function
   mean(x)
 }
 myfunction() #call created function
+myfunction # prints source code for function
+args(myfunction) # returns arguments for passed function
 
 myaddedfunction <- function(x,y){ #create a function with formal arguments x and y
   x + y + rnorm(100) # implicit return last expression
 }
 myaddedfunction(5,3)
-myaddedfunction(4:10)
+myaddedfunction(4:10,2)
 
 # function with default argument if left unspecified, for common cases
 above <- function(x, n = 10){
@@ -315,7 +334,7 @@ columnmean <- function(y, removeNA = TRUE) {
 # Lazy Evaluation: R evaluated statements and arguments as they come
 f <- function (a,b,c){
   print(a)
-  print(b)
+  #print(b) # error
 }
 f(3) # prints a, error for b, no rxn to not having c
 
@@ -331,13 +350,38 @@ sd(na.rm = FALSE, mydata) # remove argument from list, default works on first un
 
 # Variable Arguments
 # to extend another function without copying arg list of OG function
-myplot <- function(x,y,type = "l",...) {
-  plot(x,y,type=type,...)
+simon_says <- function(...){
+  paste("Simon says:", ...)
 }
 # or for generic functions passed to methods
+# unpacking an ellipses
+mad_libs <- function(...){
+  args <- list(...)
+  place <- args$place
+  adjective <- args$adjective
+  noun <- args$noun
+  paste("News from", place, "today where", adjective, "students took to the streets in protest of the new", noun, "being installed on campus.")
+}
 # or when number of args unknown in advance (if at beginning, no positional or partial matching)
 args(paste) # operates on unknown sets of character vectors
 
+# function as an argument
+some_function <- function(func){
+  func(2, 4) # returns result of function with 2,4 arguments
+}
+some_function(mean) # returns mean of 2,4
+
+# Anonymous function (chaos)
+evaluate  <- function(func, dat){
+  func(dat)
+}
+evaluate(function(x){x+1}, 6) # creates a function when calling evaluate to add 1
+
+# create a binary operation
+"%mult_add_one%" <- function(left, right){
+  left * right + 1
+}
+4 %mult_add_one% 5
 
 ```
 
@@ -401,35 +445,35 @@ get("n",environment(cube)) # values in function environment, changes for square
 ``` {r workingData}
 
 # Read data into R
-x <- read.table("hw1_data.csv") #reading tabular data from text files, return data frame. Args: file (name, connection), header (logical if header line present), sep (string indicating column separator), colClasses (character vector of class of each column), nrows (number of rows), comment.char (character string indicating comment character), skip (number of lines to skip from beginning), stringsAsFactors (logical if character variables coded as factors, default true). Efficient. Default separator " " and header = FALSE. Check help page to optimize for large datasets, set comment.char = "" to optimize if no comments present, use colClasses, nrow (memory).
+x <- read.table("hw1_data.csv", header = TRUE, sep = ",") #reading tabular data from text files, return data frame. Args: file (name, connection), header (logical if header line present), sep (string indicating column separator), colClasses (character vector of class of each column), nrows (number of rows), comment.char (character string indicating comment character), skip (number of lines to skip from beginning), stringsAsFactors (logical if character variables coded as factors, default true). Efficient. Default separator " " and header = FALSE. Check help page to optimize for large datasets, set comment.char = "" to optimize if no comments present, use colClasses, nrow (memory).
 x <- read.csv("hw1_data.csv") # Same but default separator is ", "  and header = TRUE
-write.table()
+write.table(x)
 
 # help read.table with colClasses with smaller sample
-initial <- read.table("hw1_data.csv",nrows = 100)
+initial <- read.table("hw1_data.csv", header = TRUE, sep = ",", nrows = 100)
 classes <- sapply(initial, class)
-tabAll <- read.table("hw1_data.csv", colClasses = classes)
+tabAll <- read.table("hw1_data.csv", header = TRUE, sep = ",", colClasses = classes)
 
-lines <- readLines # reading lines of text file, return character vector
-writeLines()
+lines <- readLines("coded.R") # reading lines of text file, return character vector
+writeLines("coded.R")
 
 # editable textual format retains metadata, helpful for version control, corruption fixable, memory cost
-dget(coded.R) # reading R objects deparsed into text files
-dput() # takes R object, create R code to reconstruct object saving attributes, names
-source(coded.R) # reading in R code files
-dump() # multiple R objects
+dget("coded.R") # reading R objects deparsed into text files
+dput("coded.R") # takes R object, create R code to reconstruct object saving attributes, names
+source("coded.R") # reading in R code files
+#dump() # multiple R objects
 
-load() # read in saved workspace read binary objects into R
-save()
-unserialize() # read single R objects in binary form
-serialize()
+# load() # read in saved workspace read binary objects into R
+# save()
+# unserialize() # read single R objects in binary form
+# serialize()
 
 # Interface to outside world
 file(description = "hw1_data.csv") # open connection to standard, uncompressed file. Helps for partial file reading. description = file name, open = "r"(read only), "w" (writing and initializing new file), "a" (appending), "rb"/"wb"/"ab" in binary (Windows)
-gzfile() # connection to file w compression gzip
-bzfile() # connection to file w compression bzip2
-url("http://www.jhsph.edu", "r") # connection to webpage
-close() # to end connection
+# gzfile() # connection to file w compression gzip
+# bzfile() # connection to file w compression bzip2
+jh <- url("http://www.jhsph.edu", "r") # connection to webpage
+close(jh) # to end connection
 
 # Subsetting R Objects
 x <- c("a","b","c","c","d","a")
@@ -448,7 +492,7 @@ x$bar # like [[]] but by name. Ex, return num vector 0.6. Equivalent to x[["bar"
 x[c(1,3)] # multiple object extraction from list, returns list
 name = "foo"
 x[[name]] # must be used if using computed index
-x[[1][3]] # return element in element in object
+x[1][3] # return element in element in object
 x[[c(1,3)]]
 
 # Subsetting Matrix
