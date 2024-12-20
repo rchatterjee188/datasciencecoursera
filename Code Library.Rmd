@@ -11,6 +11,8 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Notes taken from Johns Hopkins University Coursera course series Data Science Specialization.
+
 # R Data Types
 - Basic object is vector of same class except list.  
 - Atomic classes of objects: character, numeric (real), integer, complex, logical.  
@@ -83,6 +85,7 @@ x %*% y # matrix multiplication
 # factors
 # self-describing type of vector representing categorical data, ordered or unordered (labels)
 x <- factor(c("male","female","female","female","male")) # character vector with specific linear modeling capabilities, levels also in output
+f <- gl(3,10) # factor 3 levels, 10 times each
 
 # data frames
 # stores tabular/rectangular data, stored as lists of same length where each element is a column, length of element is number of rows. Different classes possible
@@ -116,6 +119,7 @@ today <- Sys.Date()
 currentTime <- Sys.time()# time by POSIXct(large integer vector, useful in dataframe) or POSIXlt(list, other info stored like day) class, stored internally as number of seconds since 1970-01-01 or list, respectively
 timedefined <- as.POSIXct("2012-10-25 06:00:00") # convert char vector, can define timezone
 cTConvert <- as.POSIXlt(currentTime) # reclass, works other way
+cTConvert$min # to subset list
 
 datestring <- c("January 10, 2012 10:40", "December 9, 2011 9:10")
 x <- strptime(datestring, "%B %d, %Y %H:%M") # Convert character vector to POSIXlt by defining format (format string)
@@ -203,6 +207,16 @@ c(0.5,0.8,10) # creates a vector of a certain class otherwise coercion
 as.numeric(0:6) # explicit coercion, works on all atomic classes, if not possible converts to NA and warning
 mean(c(3,4,5,6,7)) # return mean of numeric vector
 sd(c(3,4,5,6,7)) # returns standard deviation of numeric vector
+cor(c(3,4,5,6,7), c(61,47,18,18,5)) # correlation of x and y vectors make sure to set arg use for NAs
+summary(c(3,4,5,6,7)) # result summaries of the results of various model fitting functions based on class
+quantile(c(3,4,5,6,7), probs = 0.25) # returns 25th percentile
+
+# Matrix function
+x <- matrix(rnorm(200), 20, 10)
+rowSums(x) # vector of sum of rows
+rowMeans(x) # vector of mean of rows
+colSums(x) # vector of sum of cols
+colMeans(x) # vector of mean of cols
 
 # Factors functions
 x <- factor(c("male","female","female","female","male")) # can include levels argument to set order (baseline is first) otherwise alphabetical
@@ -296,6 +310,63 @@ for(i in 1:100) {
 }
 
 # return to exit a function, will end control structure inside function
+
+```
+
+``` {r loopfunctions}
+# Loop functions - useful for looping in the command line
+
+# lapply - loop over a list and evaluate on each element. args: X (list or coercion), FUN (function or function name), ... (other args). returns list with same names if defined. Passes element to function first argument
+x <- list(a = 1:5, b = rnorm(10))
+lapply(x, mean) # returns list of 2 numerics
+x <- 1:4
+lapply(x, runif, min = 0, max = 10) # passes subsequent args to function
+x <- list(a = matrix(1:4, 2, 2), b = matrix(1:6, 3, 2))
+lapply(x, function(elt) elt[,1]) # define an anonymous function inside lapply
+
+# sapply - same as lapply but simplify, i.e. will make list of 1 element vectors a vector, multiple elements same length returns a matrix, else a list
+x <- list(a = 1:5, b = rnorm(10))
+lapply(x, mean) # now returns vector length 2
+# mean only operates on signle element numeric/logical, so need to use loop
+
+# apply - apply function over margins of array (good for summary of matrices or higher level array). Not better than for loop except less code. Args: X as above, MARGIN (integer vector showing margins to retain), FUN as above, ... as above
+x <- matrix(rnorm(200), 20, 10)
+apply(x, 2, mean) # mean of each column by collapsing 1st dimension, returns num vector length of ncol. MARGIN = 1 gives rows collapse cols.
+rowSums(x) # equivalent to apply(x, 1, sum)
+rowMeans(x) # equivalent to apply(x, 1, mean)
+colSums(x) # apply(x, 2, sum)
+colMeans(x) #apply(x, 2, mean)
+apply(x, 1, quantile, probs = c(0.25, 0.75)) # runs quantile with 2 agrs for every element in list, returns matrix of 2 rows, nrows rows.
+a <- array(rnorm(2 * 2 * 10), c(2, 2, 10)) # array in 3D
+apply(a, c(1,2), mean) # collapses only 3rd dimension, returns 2x2 matrix. Equivalent rowMeans(a, dims = 2).
+
+# tapply - apply function over subset of a vector. args: X is vector, INDEX is factor/list factors vector same length as X, FUN, ..., simplify = TRUE
+x <- c(rnorm(10), runif(10), rnorm(10,1))
+f <- gl(3,10) # factor 3 levels, 10 times each
+tapply(x,f,mean)
+
+# mapply - multivariate version of lapply. args: FUN as above, ... (arguments to apply over), MoreArgs (other arguments for FUN), SIMPLIFY (logical for if to simplify). Apply over multiple lists. Like nested loop
+list(rep(1,4), rep(2,3), rep(3,2), rep(4,1))
+mapply(rep, 1:4, 4:1) # equivalent
+
+noise <- function(n,mean,sd){rnorm(n,mean,sd)}
+noise(1:5,1:5,2) # gives vector of 5, same as single num args
+mapply(noise,1:5,1:5,2) # applies function for each pair, list of 5 of length i
+
+# split - in conjunction with lapply to split objects into subpieces. Args: x (any object), f (factor), drop (logical if empty factors to be dropped) = FALSE, ...
+x <- c(rnorm(10), runif(10), rnorm(10,1))
+f <- gl(3,10) # factor 3 levels, 10 times each
+split(x,f) # tapply without function, sorts into list based on levels, can then use lapply or sapply.
+lapply(split(x,f), mean) # in this case can use tapply
+# can do data frames
+data <- read.csv("hw1_data.csv")
+s <- split(data, data$Month)
+sapply(s, function(x) colMeans(x[,c("Ozone","Solar.R","Wind")], na.rm = TRUE)) # data$Month coerced into factor
+# Multi-level split
+x <- rnorm(10)
+f1 <- gl(2,5); f2 <- gl(5,2) # ex. race and gender 2 factors
+interaction(f1,f1) # combine each pair, 10 factors
+split(x, list(f1,f2)) # interaction called, list returned for combination sort, drop = TRUE to remove unused
 
 ```
 
@@ -444,6 +515,9 @@ get("n",environment(cube)) # values in function environment, changes for square
 
 ``` {r workingData}
 
+# Pull all file names from a directory into a character vector
+files_full <- list.files("specdata", full.names=TRUE)
+
 # Read data into R
 x <- read.table("hw1_data.csv", header = TRUE, sep = ",") #reading tabular data from text files, return data frame. Args: file (name, connection), header (logical if header line present), sep (string indicating column separator), colClasses (character vector of class of each column), nrows (number of rows), comment.char (character string indicating comment character), skip (number of lines to skip from beginning), stringsAsFactors (logical if character variables coded as factors, default true). Efficient. Default separator " " and header = FALSE. Check help page to optimize for large datasets, set comment.char = "" to optimize if no comments present, use colClasses, nrow (memory).
 x <- read.csv("hw1_data.csv") # Same but default separator is ", "  and header = TRUE
@@ -484,6 +558,8 @@ u <- x > "a" # create logical vector
 x[u] # same as x[x>"a"]
 x[!is.na(x) & x > 0] # returns only positive, non NA values
 x[c(-2, -10)] # returns vector with 2nd and 10th elements removed
+x <- data.frame(foo = 1:6, bar = c("g","h","i","j","k","l"))
+x[[which(x$bar == "h"), "foo"]] # get or set foo in the same row as bar of "h"
 
 x <- list(foo = 1:4, bar = 0.6, baz = "hello")
 x[1] # list containing first element
@@ -519,6 +595,6 @@ sum(my_na)
 
 x <- read.csv("hw1_data.csv") # for data frames
 goodVals <- complete.cases(x) # complete rows in the data frame
-x[good,]
+x[goodVals,]
 
 ```
