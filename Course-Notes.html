@@ -611,6 +611,98 @@ Press.<br />
 </ul>
 </div>
 </div>
+<div id="debugging" class="section level1">
+<h1>Debugging</h1>
+<div id="problem" class="section level3">
+<h3>Problem</h3>
+<ul>
+<li>message: no stop, message function.<br />
+</li>
+<li>warning: unexpected, not fatal, end of function, warning
+function.<br />
+</li>
+<li>error: fatal, stop function.<br />
+</li>
+<li>Condition: classes listed above or creatable, generic.</li>
+</ul>
+<pre class="r"><code>log(-1) # returns NaN and warning about args</code></pre>
+<pre><code>## Warning in log(-1): NaNs produced</code></pre>
+<pre><code>## [1] NaN</code></pre>
+<pre class="r"><code>printmessage &lt;- function(x) {
+  if (x &gt; 0) print(&quot;x &gt; 0&quot;)
+  else print(&quot; x &lt;= 0&quot;)
+  invisible(x) # return no print
+}
+#printmessage(NA) # comparison not possible, error</code></pre>
+</div>
+<div id="how-to-know-something-is-wrong" class="section level3">
+<h3>How to know something is wrong?</h3>
+<ul>
+<li>What was the input? How was the function called?<br />
+</li>
+<li>What was expected? i.e. output, message, other result<br />
+</li>
+<li>What was done?<br />
+</li>
+<li>What was the difference between expected and actual results?<br />
+</li>
+<li>Were the expectations correct?<br />
+</li>
+<li>Is the problem reproducible?</li>
+</ul>
+</div>
+<div id="tools" class="section level3">
+<h3>Tools</h3>
+<p>Use in commandline and in code ####traceback - print function call
+stack after an error. Call immediately after error. Useful when
+functions call functions.<br />
+- lm(y - x)<br />
+- traceback()<br />
+- prints list of function calls, error is in the top function</p>
+<div id="debug" class="section level4">
+<h4>debug</h4>
+<ul>
+<li>flags function fro debug mode to step through execution
+line-by-line<br />
+</li>
+<li>debug(lm)<br />
+</li>
+<li>lm(y - x)<br />
+</li>
+<li>prints function code then browser prompt (workspace in function
+environment).<br />
+</li>
+<li>Press n for next to iterate through the lines. Can call dubugger on
+functions inside debugger.</li>
+</ul>
+</div>
+<div id="browser" class="section level4">
+<h4>browser</h4>
+<ul>
+<li>suspends execution of function wherever called and enters debug
+mode</li>
+</ul>
+</div>
+<div id="trace" class="section level4">
+<h4>trace</h4>
+<ul>
+<li>insert debugging code into function in specific places</li>
+</ul>
+</div>
+<div id="recover" class="section level4">
+<h4>recover</h4>
+<ul>
+<li>modify error behavior to browse function call stack. Set global
+option for all command-line calls<br />
+</li>
+<li>options(error = recover)<br />
+</li>
+<li>Prints call stack options, select level to browse environment of
+function</li>
+</ul>
+</div>
+</div>
+</div>
 <div id="version-control" class="section level1">
 <h1>Version Control</h1>
 <ul>

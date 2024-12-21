@@ -113,6 +113,58 @@ Difficulty in volume, velocity, and variety. Also move from structured data (lon
 - Limit width of code (80 cols)  
 - Limit length of function (1 activity, single page)  
 
+# Debugging
+
+### Problem
+- message: no stop, message function.  
+- warning: unexpected, not fatal, end of function, warning function.  
+- error: fatal, stop function.  
+- Condition: classes listed above or creatable, generic.  
+``` {r problems}
+log(-1) # returns NaN and warning about args
+
+printmessage <- function(x) {
+  if (x > 0) print("x > 0")
+  else print(" x <= 0")
+  invisible(x) # return no print
+}
+#printmessage(NA) # comparison not possible, error
+```
+
+### How to know something is wrong?
+- What was the input? How was the function called?  
+- What was expected? i.e. output, message, other result  
+- What was done?  
+- What was the difference between expected and actual results?  
+- Were the expectations correct?  
+- Is the problem reproducible?  
+
+### Tools
+Use in commandline and in code
+####traceback
+- print function call stack after an error. Call immediately after error. Useful when functions call functions.  
+- lm(y - x)  
+- traceback()  
+- prints list of function calls, error is in the top function  
+
+#### debug
+- flags function fro debug mode to step through execution line-by-line  
+- debug(lm)  
+- lm(y - x)  
+- prints function code then browser prompt (workspace in function environment).  
+- Press n for next to iterate through the lines. Can call dubugger on functions inside debugger.  
+
+#### browser
+- suspends  execution of function wherever called and enters debug mode  
+
+#### trace
+- insert debugging code into function in specific places  
+
+#### recover
+- modify error behavior to browse function call stack. Set global option for all command-line calls  
+- options(error = recover)  
+- Prints call stack options, select level to browse environment of function  
+
 
 # Version Control
 - GitHub Repository Instruction:  <https://docs.github.com/en/get-started/start-your-journey/hello-world>  

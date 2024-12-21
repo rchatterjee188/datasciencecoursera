@@ -208,7 +208,11 @@ as.numeric(0:6) # explicit coercion, works on all atomic classes, if not possibl
 mean(c(3,4,5,6,7)) # return mean of numeric vector
 sd(c(3,4,5,6,7)) # returns standard deviation of numeric vector
 cor(c(3,4,5,6,7), c(61,47,18,18,5)) # correlation of x and y vectors make sure to set arg use for NAs
+head(data.frame(foo = 1:20, rar = 301:320)) # prints preview of first 6 lines
+table(c(1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,4,4,5)) # returns table of counts
 summary(c(3,4,5,6,7)) # result summaries of the results of various model fitting functions based on class
+unique(c(3,4,5,6,7,3,3,5,7,2,8,3,5,6)) # returns only unique elements, duplicates removed
+range(c(3,4,5,6,7)) # returns min and max as numeric vector of 2
 quantile(c(3,4,5,6,7), probs = 0.25) # returns 25th percentile
 
 # Matrix function
@@ -315,6 +319,7 @@ for(i in 1:100) {
 
 ``` {r loopfunctions}
 # Loop functions - useful for looping in the command line
+# Hadley Wickham's Journal of Statistical Software paper titled 'The Split-Apply-Combine Strategy for Data Analysis'.
 
 # lapply - loop over a list and evaluate on each element. args: X (list or coercion), FUN (function or function name), ... (other args). returns list with same names if defined. Passes element to function first argument
 x <- list(a = 1:5, b = rnorm(10))
@@ -328,6 +333,9 @@ lapply(x, function(elt) elt[,1]) # define an anonymous function inside lapply
 x <- list(a = 1:5, b = rnorm(10))
 lapply(x, mean) # now returns vector length 2
 # mean only operates on signle element numeric/logical, so need to use loop
+
+# vapply - pre-specify type of return value, safer and faster. Args: X, FUN, FUN.VALUE (generalized vector as template for return), ..., USE.NAMES = TRUE)
+vapply(x, mean, numeric(1)) # same as sapply(x, mean)
 
 # apply - apply function over margins of array (good for summary of matrices or higher level array). Not better than for loop except less code. Args: X as above, MARGIN (integer vector showing margins to retain), FUN as above, ... as above
 x <- matrix(rnorm(200), 20, 10)
@@ -399,7 +407,7 @@ columnmean <- function(y, removeNA = TRUE) {
   nc <- ncol(y)
   means <- numeric(nc)
   for(i in 1:nc) means[i] <- mean(y[,i], na.rm = removeNA)
-  means
+  invisible(means) # auto-return blocks auto-print
 }
 
 # Lazy Evaluation: R evaluated statements and arguments as they come
