@@ -189,6 +189,8 @@ print(x) # print value as vector
 x # auto-prints
 # in console, press Tab for auto-completion
 
+# <<- operator can be used to assign a value to an object in an environment that is different from the current environment
+
 # Random number generation
 y <- rnorm(1000) # generate vector of 1000 numbers that are standard normal distribution.
 y <- sample(1:6,3) # random selection of 3 elements from array
@@ -221,6 +223,8 @@ rowSums(x) # vector of sum of rows
 rowMeans(x) # vector of mean of rows
 colSums(x) # vector of sum of cols
 colMeans(x) # vector of mean of cols
+x <- matrix(rnorm(100), 10, 10)
+solve(x) # returns inverse of matrix if invertible
 
 # Factors functions
 x <- factor(c("male","female","female","female","male")) # can include levels argument to set order (baseline is first) otherwise alphabetical
