@@ -86,6 +86,7 @@ x %*% y # matrix multiplication
 # self-describing type of vector representing categorical data, ordered or unordered (labels)
 x <- factor(c("male","female","female","female","male")) # character vector with specific linear modeling capabilities, levels also in output
 f <- gl(3,10) # factor 3 levels, 10 times each
+table(x) # prints counts of each factor
 
 # data frames
 # stores tabular/rectangular data, stored as lists of same length where each element is a column, length of element is number of rows. Different classes possible
@@ -139,7 +140,7 @@ difftime(currentTime, timedefined, units = "days") # to specify unit
 
 
 # Basic R Functions
-``` {r}
+``` {r basic}
 # managing working directory and work space
 x <- getwd() # find working directory
 dir.create("testdir") # create a directory, args: dir name, for nested recursive = true
@@ -156,6 +157,7 @@ setwd(x)
 dir() # output files in directory. Also list.files().
 ls() # prints the objects in work space
 rm(list=ls()) # clear workspace
+rm(list=setdiff(ls(), "x")) # clear workspace except x
 version #R info version
 sessionInfo() #R info version, packages
 source("coded.R") # load code into console
@@ -181,21 +183,15 @@ all(c(1,2,3,4,5,6) < 2) # returns TRUE only if all the elements of vector are TR
 # Character functions
 paste(c("My","name","is"),collapse = " ") # join elements into one element, can join multiple vectors with multiple arguments, adds element-by-element with coersion and recycling
 c (c("My","name","is"), "Bob") # add to the vector
-str(unclass(as.POSIXlt(Sys.time()))) # prints list clearly
 
 # Input and Evaluation
 x <- 1 # assignment operator, evaluates and returns
 print(x) # print value as vector
 x # auto-prints
 # in console, press Tab for auto-completion
+LETTERS # predefined character vector of capital letters
 
 # <<- operator can be used to assign a value to an object in an environment that is different from the current environment
-
-# Random number generation
-y <- rnorm(1000) # generate vector of 1000 numbers that are standard normal distribution.
-y <- sample(1:6,3) # random selection of 3 elements from array
-ints <- sample(10) # random sample of integers from 1 to 10 without replacement
-coin <- rbinom(1,1,0.5) # simulating coin flip
 
 # Functions on Objects
 class(x) # determine class of object
@@ -203,7 +199,7 @@ attributes(x) # function to return or modify attributes of object
 identical(x,x) # returns logical for if two objects are identical
 length(x) # to specifically get the length of vector
 dim(x) # to get dimensions of matrix, data frame (row x column)
-identical(x,y) # check if objects are identical
+object.size(x) # return memory occupied in bytes
 c(0.5,0.8,10) # creates a vector of a certain class otherwise coercion
 -c(0.5,0.8,10) # distributes the negative to all elements of vector
 as.numeric(0:6) # explicit coercion, works on all atomic classes, if not possible converts to NA and warning
@@ -211,11 +207,18 @@ mean(c(3,4,5,6,7)) # return mean of numeric vector
 sd(c(3,4,5,6,7)) # returns standard deviation of numeric vector
 cor(c(3,4,5,6,7), c(61,47,18,18,5)) # correlation of x and y vectors make sure to set arg use for NAs
 head(data.frame(foo = 1:20, rar = 301:320)) # prints preview of first 6 lines
+tail(data.frame(foo = 1:20, rar = 301:320)) # prints preview of last 6 lines
 table(c(1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,4,4,5)) # returns table of counts
 summary(c(3,4,5,6,7)) # result summaries of the results of various model fitting functions based on class
 unique(c(3,4,5,6,7,3,3,5,7,2,8,3,5,6)) # returns only unique elements, duplicates removed
 range(c(3,4,5,6,7)) # returns min and max as numeric vector of 2
 quantile(c(3,4,5,6,7), probs = 0.25) # returns 25th percentile
+
+# str function - compactly display internal structure of R object (esp large lists). Diagnostic, alternative to summary()
+str(unclass(as.POSIXlt(Sys.time()))) # prints list clearly
+str(lm) # list of function arguments
+str(rnorm(100,2,4)) # type of vector, length, first 5 elements
+str(gl(40,10)) # for factors
 
 # Matrix function
 x <- matrix(rnorm(200), 20, 10)
@@ -239,6 +242,44 @@ is.na(c (1,2,NA,5,6,NA, NA,3, NaN)) # output logical vector of length of input
 is.nan(c (1,2,NaN,5,6,NA, NaN,3)) # output logical vector of length of input
 
 ```
+
+``` {r randomnumbers}
+# Random number generation
+# Probability distribution functions have 4 functions associated: d- density, r- random number generation, p- cumulative distribution, q- quantile function. Normal, gamma, Poisson, binomial, exponential, chi-squared
+set.seed(1) # set sequence of random number generation. set.seed(1); rnorm(5) always results in the same sequence (reproducible).
+y <- rnorm(1000) # generate vector of 1000 numbers that are standard normal distribution. Agrs: n, mean = 0, sd = 1.
+y <- dnorm(c(0.25,0.5,0.75)) # evaluate Normal probability density, (given mean,sd) at point or vector points. Args: x, mean = 0, sd = 1, log = FALSE.
+y <- pnorm(0.5) # evaluate cumulative distribution function for normal distribution. Args: q, mean=0, sd=1, lower.tail=TRUE, log.p=FALSE.
+y <- qnorm(0.5) # evaluates quantiles for normal distribution. Args: p, mean=0, sd=1, lower.tail=TRUE, log.p=FALSE.
+y <- sample(1:6,3) # random selection of 3 elements from array
+ints <- sample(10) # random sample all integers from 1 to 10 without replacement. Permutation
+nums <- sample(1:10, replace = TRUE) # with replacement
+let <- sample(LETTERS) # sample all letters without replacement
+flips <- sample(c(0,1), 100, replace = TRUE, prob = c(0.3,0.7)) # unfair coin
+coin <- rbinom(1,1,0.5) # simulating coin flip
+unfairflip <- rbinom(1, size = 100, prob = 0.7) # sum of flips above
+flips2 <- rbinom(100,1,0.7) # flips above
+y <- rpois(10, 1) # generate random poisson variates with given rate. Args: n (count), rate (mean)
+pois_mat <- replicate(100, rpois(5, 10))
+
+# Simulate Linear Model Ex
+# y = B(o) + B(1) * x + e
+# e ~ N(0,2^2) assume x ~ N(0,1^2), B(0) = 0.5, B(1) = 2.
+set.seed(20)
+x <- rnorm(100)
+e <- rnorm(100,0,2)
+y <- 0.5 + 2 * x + e
+# can combine different distributions
+# Poisson: Y ~ Poisson(mu)
+# log(mu) = B(0) + B(1)x
+# B(0) = 0.5 and B(1) = 0.3
+set.seed(1)
+x <- rnorm(100)
+log.mu <- 0.5 + 0.3 * x
+y <- rpois(100, exp(log.mu))
+
+```
+
 
 ``` {r controlfunctions}
 # control execution of program
@@ -608,5 +649,45 @@ sum(my_na)
 x <- read.csv("hw1_data.csv") # for data frames
 goodVals <- complete.cases(x) # complete rows in the data frame
 x[goodVals,]
+
+```
+
+# Graphics
+<http://www.ling.upenn.edu/~joseff/rstudy/week4.html>
+``` {r basegraphs}
+# Start by getting sense of the data: dim(), names(), head(), tail() and summary().
+
+# Scatterplot
+data(cars)
+plot(cars) # generates scatterplot with two columns against each other
+plot(x = cars$speed, y = cars$dist) # explicit, can also pass plot(dist ~ speed, cars). Args: x, y = NULL, type = "p",  xlim = NULL, ylim = NULL, log = "", main = NULL, sub = NULL, xlab = NULL, ylab = NULL, ann = par("ann"), axes = TRUE, frame.plot = axes, panel.first = NULL, panel.last = NULL, asp = NA, xgap.axis = NA, ygap.axis = NA, ... (more at ?par)
+
+# Boxplot
+data(mtcars)
+boxplot(mpg ~ cyl, data = mtcars) # generate relationship between mpg(x) and cyl(y) from mtcars
+
+# Histogram
+hist(mtcars$mpg) # generate a histogram of vector
+
+```
+
+# R Profiler and Optimization
+- Systematic way to examine time spent in various part of the program. Useful to optimize the code.  
+- DON'T PREMATURELY OPTIMIZE  
+- Measure, not guess, data on what needs to be optimized.  
+- User time: computer experienced, may be greater if multiple cores/processors (accessible in multi-threaded BLAS libraries). Elapsed time: wall-clock time, may be greater if other computing tasks.  
+``` {r profiler}
+system.time(read.csv("hw1_data.csv")) # returns seconds to execute, if error then seconds to error. Wrap longer expression in arguement in curly braces. Assumption htat you know where the problem is.
+
+data(mtcars)
+Rprof() # track function call stack at intervals (def = 0.02 sec), time spent in functions.
+
+fit <- lm(mtcars$mpg ~ mtcars$cyl)
+
+Rprof(NULL)
+
+summaryRprof() # makes Rprof readable, tabluates, time in each function
+# $by.total - divides time spent per function by total run time
+# $by.self - same as by.total but first subtracts time spent in function above in call stack. Helps target.
 
 ```
