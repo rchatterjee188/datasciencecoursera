@@ -2,7 +2,9 @@
 title: "Course Notes"
 author: "Ruhika Chatterjee"
 date: "2024-12-07"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -63,7 +65,7 @@ Notes taken from Johns Hopkins University Coursera course series Data Science Sp
 
 ### Experimental Design
 - Organizing an experiment so that you have the correct and sufficient data. to clearly and effectively answer your data science question. Ask question, create setup, identify problems or sources of error, collect data.  
-- Keep track of independent and dependent variables, decide what variables you will measure, and which you will manipulate to effect changes in other measured variables.
+- Keep track of independent and dependent variables, decide what variables you will measure, and which you will manipulate to effect changes in other measured variables.  
 - Develop your hypothesis, decide sample size.  
 - Determine confounders, control for it by measuring confounding variables or fixing the variable. Consider control groups, including blinding to combat placebo effect; randomization to remove confounder bias and systemic error; and replication to measure variability accurately and establish significance. These strategies remove the effect of confounding.  
 - Share data and code.  
@@ -197,7 +199,7 @@ in Git Bash
 
 in GitHub: create repo (same name, no .readme, .gitignore, license), select “Push an existing repository from the command line”, copy the code, reopen all
 
-### Swirl
+# Swirl
 <https://swirlstats.com/>
 ``` {r swirl}
 # install.packages("swirl", repos = "http://cran.us.r-project.org")

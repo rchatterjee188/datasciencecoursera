@@ -18,6 +18,7 @@ Notes taken from Johns Hopkins University Coursera course series Data Science Sp
 - Atomic classes of objects: character, numeric (real), integer, complex, logical.  
 - Attributes can include names, dimnames, dimensions, class, length.
 
+### Atomic Data
 ``` {r atomicClass}
 
 # numeric Vector
@@ -44,22 +45,17 @@ x <- 1+4i # vector of complex num of len 1
 ### complex Data Types
 ``` {r complexData}
 # vector
-x <- vector("numeric", length = 10) # create vector of one type, args: class, length
-x <- c(1,2,3,4) # creates vector of common denominator class with given values
-x <- 1:20 # vector sequence of 20 elements 1-20
-x <- pi:10 # will not exceed 10, start from pi, increment by 1
-x <- 15:1 # increment -1
-x <- seq(1,20) # same as :
-x <- seq(0,10,by=0.5) # to change increment
-x <- seq(5,10,length=30) # to not set increment but number of numbers
-x <- seq_along(x) # vector of same length 1:length(x)
-x <- rep(10, times = 4) # repeats 10 4 times in vector
-x <- rep(c(0, 1, 2), times = 10) # repeats sequence of vector 10 times. Arg each can be used to repeat first, then second... element in vector.
-
-# vectorized operations
-x <- 1:4; y <- 6:9 # different length vectors
-x + y # add the elements of the vectors, all operators work
-x > 2 # returns logical vector, >= or == or any of the logical expressions work
+vector("numeric", length = 10) # create vector of one type, args: class, length
+c(1,2,3,4) # creates vector of common denominator class with given values
+1:20 # vector sequence of 20 elements 1-20
+pi:10 # will not exceed 10, start from pi, increment by 1
+15:1 # increment -1
+seq(1,20) # same as :
+seq(0,10,by=0.5) # to change increment
+seq(5,10,length=30) # to not set increment but number of numbers
+seq_along(x) # vector of same length 1:length(x)
+rep(10, times = 4) # repeats 10 4 times in vector
+rep(c(0, 1, 2), times = 10) # repeats sequence of vector 10 times. Arg each can be used to repeat first, then second... element in vector.
 
 # lists
 # vector capable of carrying different classes
@@ -77,38 +73,24 @@ dim(x) <- c(2,5) # creates matrix out of vector with dimension 2 rows x 5 column
 cbind(1:3,10:12) # creates matrix out of values in vector args, adding by column (1st arg = 1st col)
 rbind(1:3,10:12) # same but using rows
 
-# vectorized operation
-x <- matrix(1:4,2,2); y <- matrix(rep(10,4),2,2)
-x * y # element wise multiplication, for all operators
-x %*% y # matrix multiplication
-
 # factors
 # self-describing type of vector representing categorical data, ordered or unordered (labels)
 x <- factor(c("male","female","female","female","male")) # character vector with specific linear modeling capabilities, levels also in output
 f <- gl(3,10) # factor 3 levels, 10 times each
 table(x) # prints counts of each factor
 
-# data frames
+```
+
+### Data Frames
+``` {r dataframe}
 # stores tabular/rectangular data, stored as lists of same length where each element is a column, length of element is number of rows. Different classes possible
 x <- data.frame(foo=1:4, bar=c(T,T,F,F)) # creates data frame 2 columns foo and bar, 4 rows unnamed. Can also combine with matrices
 x <- read.table(file = "hw1_data.csv", header = TRUE, sep = ",") # read in data from file
 x <- read.csv("hw1_data.csv") # same
-row.names(x) # get and set row names (attributes). Can also use rownames(x)
-colnames(x) # get and set row names
-nrow(x) # number of rows
-ncol(x) # number of columns
-data.matrix(x) # converts data frame to matrix, coercion
 
-# names attribute
-x <- 1:3
-names(x) # is null
-names(x) <- c("foo","bar","norf") #now not numbered vector but named, print x and names(x) with names
-vect <- c(foo = 11, bar = 2, norf = NA) # adds elements with names to vector directly
-# also for lists, names vectors not items
-m <- matrix(1:4,nrow = 2, ncol = 2)
-dimnames(m) <- list(c("a","b"),c("c","d")) # each dimension has a name for matrices, rows names then columns
 ```
 
+### Date and Time Data Types
 ``` {r datetime}
 # useful for time-series data (temporal changes) or other temporal info
 # lubridate package by Hadley Wickham
@@ -139,9 +121,47 @@ difftime(currentTime, timedefined, units = "days") # to specify unit
 ```
 
 
+# Reading and Writing Data
+``` {r readingandwriting}
+
+# Read data into R
+x <- read.table("hw1_data.csv", header = TRUE, sep = ",") #reading tabular data from text files, return data frame. Args: file (name, connection), header (logical if header line present), sep (string indicating column separator), colClasses (character vector of class of each column), nrows (number of rows), comment.char (character string indicating comment character), skip (number of lines to skip from beginning), stringsAsFactors (logical if character variables coded as factors, default true). Efficient. Default separator " " and header = FALSE. Check help page to optimize for large datasets, set comment.char = "" to optimize if no comments present, use colClasses, nrow (memory).
+x <- read.csv("hw1_data.csv") # Same but default separator is ", "  and header = TRUE
+write.table(x)
+
+# help read.table with colClasses with smaller sample
+initial <- read.table("hw1_data.csv", header = TRUE, sep = ",", nrows = 100)
+classes <- sapply(initial, class)
+tabAll <- read.table("hw1_data.csv", header = TRUE, sep = ",", colClasses = classes)
+
+lines <- readLines("coded.R") # reading lines of text file, return character vector
+writeLines("coded.R")
+
+# editable textual format retains metadata, helpful for version control, corruption fixable, memory cost
+dget("coded.R") # reading R objects deparsed into text files
+dput("coded.R") # takes R object, create R code to reconstruct object saving attributes, names
+source("coded.R") # reading in R code files
+#dump() # multiple R objects
+
+# load() # read in saved workspace read binary objects into R
+# save()
+# unserialize() # read single R objects in binary form
+# serialize()
+
+# Interface to outside world
+file(description = "hw1_data.csv") # open connection to standard, uncompressed file. Helps for partial file reading. description = file name, open = "r"(read only), "w" (writing and initializing new file), "a" (appending), "rb"/"wb"/"ab" in binary (Windows)
+# gzfile() # connection to file w compression gzip
+# bzfile() # connection to file w compression bzip2
+jh <- url("http://www.jhsph.edu", "r") # connection to webpage
+close(jh) # to end connection
+
+```
+
+
 # Basic R Functions
-``` {r basic}
-# managing working directory and work space
+
+### Defining Workspace or directory
+``` {r dirws}
 x <- getwd() # find working directory
 dir.create("testdir") # create a directory, args: dir name, for nested recursive = true
 setwd("testdir") # set working dir
@@ -155,6 +175,7 @@ file.path("mytest3.R") # relative path
 setwd(x)
 
 dir() # output files in directory. Also list.files().
+files_full <- list.files("specdata", full.names=TRUE) # pull all file names from a directory
 ls() # prints the objects in work space
 rm(list=ls()) # clear workspace
 rm(list=setdiff(ls(), "x")) # clear workspace except x
@@ -165,11 +186,46 @@ args(ls()) # get arguments for a function
 help(ls) # access documentation on ls() function
 ?ls # same. for operator use ?`:`
 
-# Basic Functions
-# add numbers, vectors (element-by-element or recycling)
-x <- 5 + 7 # basic arithmetic operations all work +, -, *, /, ^, %% (modulus). NA in expression returns NA.
+```
+
+# Functions and Operations
+``` {r basic}
+# Input and Evaluation
+x <- 1 # assignment operator, evaluates and returns
+print(x) # print value as vector
+x # auto-prints
+# in console, press Tab for auto-completion
+LETTERS # predefined character vector of capital letters
+# <<- operator can be used to assign a value to an object in an environment that is different from the current environment
+
+# Mathematical and Statistical Functions
+5 + 7 # basic arithmetic operations all work +, -, *, /, ^, %% (modulus). NA affects operation.
 sqrt(4) # square root
 abs(-1:2) # absolute value
+mean(c(3,4,5,6,7)) # return mean of numeric vector
+sd(c(3,4,5,6,7)) # returns standard deviation of numeric vector
+cor(c(3,4,5,6,7), c(61,47,18,18,5)) # correlation of x and y vectors make sure to set arg use for NAs
+range(c(3,4,5,6,7)) # returns min and max as numeric vector of 2
+quantile(c(3,4,5,6,7), probs = 0.25) # returns 25th percentile
+-c(0.5,0.8,10) # distributes the negative to all elements of vector
+
+# vectorized operations
+x <- 1:4; y <- 6:9 # different length vectors
+x + y # add the elements of the vectors, all operators work
+x > 2 # returns logical vector, >= or == or any of the logical expressions work
+
+# Matrix Operations
+x <- matrix(1:4,2,2); y <- matrix(rep(10,4),2,2)
+x * y # element wise multiplication, for all operators
+x %*% y # matrix multiplication
+
+x <- matrix(rnorm(200), 20, 10)
+rowSums(x) # vector of sum of rows
+rowMeans(x) # vector of mean of rows
+colSums(x) # vector of sum of cols
+colMeans(x) # vector of mean of cols
+x <- matrix(rnorm(100), 10, 10)
+solve(x) # returns inverse of matrix if invertible
 
 # Logical operators
 5 >= 2 # returns logical. <, >, <=, >=, ==, !=. NA in expression returns NA. Can also use to compare logical vectors themselves.
@@ -184,56 +240,25 @@ all(c(1,2,3,4,5,6) < 2) # returns TRUE only if all the elements of vector are TR
 paste(c("My","name","is"),collapse = " ") # join elements into one element, can join multiple vectors with multiple arguments, adds element-by-element with coersion and recycling
 c (c("My","name","is"), "Bob") # add to the vector
 
-# Input and Evaluation
-x <- 1 # assignment operator, evaluates and returns
-print(x) # print value as vector
-x # auto-prints
-# in console, press Tab for auto-completion
-LETTERS # predefined character vector of capital letters
+# Factors functions
+x <- factor(c("male","female","female","female","male")) # can include levels argument to set order (baseline is first) otherwise alphabetical
+x # prints values in vector and levels
+table(x) # prints labels and counts present
+unclass(x) # strips class to integer with levels of labels
 
-# <<- operator can be used to assign a value to an object in an environment that is different from the current environment
-
-# Functions on Objects
-class(x) # determine class of object
-attributes(x) # function to return or modify attributes of object
-identical(x,x) # returns logical for if two objects are identical
-length(x) # to specifically get the length of vector
-dim(x) # to get dimensions of matrix, data frame (row x column)
-object.size(x) # return memory occupied in bytes
-c(0.5,0.8,10) # creates a vector of a certain class otherwise coercion
--c(0.5,0.8,10) # distributes the negative to all elements of vector
-as.numeric(0:6) # explicit coercion, works on all atomic classes, if not possible converts to NA and warning
-mean(c(3,4,5,6,7)) # return mean of numeric vector
-sd(c(3,4,5,6,7)) # returns standard deviation of numeric vector
-cor(c(3,4,5,6,7), c(61,47,18,18,5)) # correlation of x and y vectors make sure to set arg use for NAs
+# Display Data Functions
+print(data.frame(foo = 1:20, rar = 301:320)) # print whole object
 head(data.frame(foo = 1:20, rar = 301:320)) # prints preview of first 6 lines
 tail(data.frame(foo = 1:20, rar = 301:320)) # prints preview of last 6 lines
 table(c(1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,4,4,5)) # returns table of counts
 summary(c(3,4,5,6,7)) # result summaries of the results of various model fitting functions based on class
 unique(c(3,4,5,6,7,3,3,5,7,2,8,3,5,6)) # returns only unique elements, duplicates removed
-range(c(3,4,5,6,7)) # returns min and max as numeric vector of 2
-quantile(c(3,4,5,6,7), probs = 0.25) # returns 25th percentile
 
 # str function - compactly display internal structure of R object (esp large lists). Diagnostic, alternative to summary()
 str(unclass(as.POSIXlt(Sys.time()))) # prints list clearly
 str(lm) # list of function arguments
 str(rnorm(100,2,4)) # type of vector, length, first 5 elements
 str(gl(40,10)) # for factors
-
-# Matrix function
-x <- matrix(rnorm(200), 20, 10)
-rowSums(x) # vector of sum of rows
-rowMeans(x) # vector of mean of rows
-colSums(x) # vector of sum of cols
-colMeans(x) # vector of mean of cols
-x <- matrix(rnorm(100), 10, 10)
-solve(x) # returns inverse of matrix if invertible
-
-# Factors functions
-x <- factor(c("male","female","female","female","male")) # can include levels argument to set order (baseline is first) otherwise alphabetical
-x # prints values in vector and levels
-table(x) # prints labels and counts present
-unclass(x) # strips class to integer with levels of labels
 
 # Missing Values
 # represented as NA (missing, with specified class) or NaN (missing or undefined)
@@ -243,6 +268,91 @@ is.nan(c (1,2,NaN,5,6,NA, NaN,3)) # output logical vector of length of input
 
 ```
 
+
+### Attributes of objects
+``` {r attributes}
+x <- c(0.5,105,10,0.1,2)
+class(x) # determine class of object
+attributes(x) # function to return or modify attributes of object
+identical(x,x) # returns logical for if two objects are identical
+length(x) # to specifically get the length of vector
+dim(x) # to get dimensions of matrix, data frame (row, column)
+object.size(x) # return memory occupied in bytes
+as.numeric(0:6) # explicit coercion, works on all atomic classes, if not possible converts to NA and warning
+
+# data frames
+row.names(x) # get and set row names (attributes). Can also use rownames(x)
+colnames(x) # get and set row names
+nrow(x) # number of rows
+ncol(x) # number of columns
+data.matrix(x) # converts data frame to matrix, coercion
+dim(x) # (row, column) dimensions of data frame
+
+# names attribute
+x <- 1:3
+names(x) # is null
+names(x) <- c("foo","bar","norf") #now not numbered vector but named, print x and names(x) with names
+vect <- c(foo = 11, bar = 2, norf = NA) # adds elements with names to vector directly
+# also for lists, names vectors not items
+m <- matrix(1:4,nrow = 2, ncol = 2)
+dimnames(m) <- list(c("a","b"),c("c","d")) # each dimension has a name for matrices, rows names then columns
+
+```
+
+### Indexing, Subsetting, and Dealing with NAs
+``` {r indexing}
+# Subsetting R Objects
+x <- c("a","b","c","c","d","a")
+x[1] # more than one element extracted, returns same class as the original, numeric/logical index
+x[1:4] # sequence of num index
+x[x>"a"] # logical indexing, returns vector where logical is true
+u <- x > "a" # create logical vector
+x[u] # same as x[x>"a"]
+x[!is.na(x) & x > 0] # returns only positive, non NA values
+x[c(-2, -10)] # returns vector with 2nd and 10th elements removed
+x <- data.frame(foo = 1:6, bar = c("g","h","i","j","k","l"))
+x[[which(x$bar == "h"), "foo"]] # get or set foo in the same row as bar of "h"
+
+x <- list(foo = 1:4, bar = 0.6, baz = "hello")
+x[1] # list containing first element
+x[[1]] # extract from list/data frame, single element, class can change. Ex, numerical vector returned
+x$bar # like [[]] but by name. Ex, return num vector 0.6. Equivalent to x[["bar"]]. Expression x["bar"] returns list of bar. Can use partial matching (x$f = x$foo = x[["f", exact = FALSE]]).
+x[c(1,3)] # multiple object extraction from list, returns list
+name = "foo"
+x[[name]] # must be used if using computed index
+x[1][3] # return element in element in object
+x[[c(1,3)]]
+
+# Subsetting Matrix
+x <- matrix(1:6, 2, 3)
+x [1,2] # returns vector len 1, different that x[2,1]. Get matrix using arg drop = FALSE.
+x[1,] # get num vector of first row, can also get col x[,2]. drop = FALSE also works
+
+# Removing NA values
+x <- c(1,2,NA,4,NA,5)
+bad <- is.na(x) # logical vector indicating presence of NA
+x[!bad] # removes NA values
+
+x[!is.na(x)] # simplified returns vector removing NA values
+
+x <- c(1,2,NA,4,NA,5) # for two vectors
+y <- c("a","b",NA,"d",NA,"f")
+good <- complete.cases(x,y) # logical vectors where there is no NA in either list
+x[good]
+y[good]
+
+# Sum of NA values
+my_na <- is.na(x)
+sum(my_na)
+
+x <- read.csv("hw1_data.csv") # for data frames
+goodVals <- complete.cases(x) # complete rows in the data frame
+x[goodVals,]
+
+```
+
+
+# Random Numbers
 ``` {r randomnumbers}
 # Random number generation
 # Probability distribution functions have 4 functions associated: d- density, r- random number generation, p- cumulative distribution, q- quantile function. Normal, gamma, Poisson, binomial, exponential, chi-squared
@@ -281,6 +391,9 @@ y <- rpois(100, exp(log.mu))
 ```
 
 
+# Control Functions and Loop Functions
+
+### Control Functions
 ``` {r controlfunctions}
 # control execution of program
 
@@ -362,6 +475,7 @@ for(i in 1:100) {
 
 ```
 
+### Loop Functions
 ``` {r loopfunctions}
 # Loop functions - useful for looping in the command line
 # Hadley Wickham's Journal of Statistical Software paper titled 'The Split-Apply-Combine Strategy for Data Analysis'.
@@ -423,6 +537,7 @@ split(x, list(f1,f2)) # interaction called, list returned for combination sort, 
 
 ```
 
+# Defining Functions
 ``` {r defFunctions}
 # stored in txt or R script, functions are R objects. Can pass functions as arguments for other functions, functions can be nested.
 
@@ -509,6 +624,7 @@ evaluate(function(x){x+1}, 6) # creates a function when calling evaluate to add 
 
 ```
 
+### Lexical Scoping
 ``` {r lexicalscoping}
 make.power <- function(n) {
   pow <- function(x) {
@@ -560,95 +676,6 @@ get("n",environment(cube)) # values in function environment, changes for square
 # remove.packages("ggtree") #remove package
 # help(package = "ggplot2") #package info
 # browseVignettes("ggplot2") #extended help files
-
-```
-
-
-# Data in R
-
-``` {r workingData}
-
-# Pull all file names from a directory into a character vector
-files_full <- list.files("specdata", full.names=TRUE)
-
-# Read data into R
-x <- read.table("hw1_data.csv", header = TRUE, sep = ",") #reading tabular data from text files, return data frame. Args: file (name, connection), header (logical if header line present), sep (string indicating column separator), colClasses (character vector of class of each column), nrows (number of rows), comment.char (character string indicating comment character), skip (number of lines to skip from beginning), stringsAsFactors (logical if character variables coded as factors, default true). Efficient. Default separator " " and header = FALSE. Check help page to optimize for large datasets, set comment.char = "" to optimize if no comments present, use colClasses, nrow (memory).
-x <- read.csv("hw1_data.csv") # Same but default separator is ", "  and header = TRUE
-write.table(x)
-
-# help read.table with colClasses with smaller sample
-initial <- read.table("hw1_data.csv", header = TRUE, sep = ",", nrows = 100)
-classes <- sapply(initial, class)
-tabAll <- read.table("hw1_data.csv", header = TRUE, sep = ",", colClasses = classes)
-
-lines <- readLines("coded.R") # reading lines of text file, return character vector
-writeLines("coded.R")
-
-# editable textual format retains metadata, helpful for version control, corruption fixable, memory cost
-dget("coded.R") # reading R objects deparsed into text files
-dput("coded.R") # takes R object, create R code to reconstruct object saving attributes, names
-source("coded.R") # reading in R code files
-#dump() # multiple R objects
-
-# load() # read in saved workspace read binary objects into R
-# save()
-# unserialize() # read single R objects in binary form
-# serialize()
-
-# Interface to outside world
-file(description = "hw1_data.csv") # open connection to standard, uncompressed file. Helps for partial file reading. description = file name, open = "r"(read only), "w" (writing and initializing new file), "a" (appending), "rb"/"wb"/"ab" in binary (Windows)
-# gzfile() # connection to file w compression gzip
-# bzfile() # connection to file w compression bzip2
-jh <- url("http://www.jhsph.edu", "r") # connection to webpage
-close(jh) # to end connection
-
-# Subsetting R Objects
-x <- c("a","b","c","c","d","a")
-x[1] # more than one element extracted, returns same class as the original, numeric/logical index
-x[1:4] # sequence of num index
-x[x>"a"] # logical indexing, returns vector where logical is true
-u <- x > "a" # create logical vector
-x[u] # same as x[x>"a"]
-x[!is.na(x) & x > 0] # returns only positive, non NA values
-x[c(-2, -10)] # returns vector with 2nd and 10th elements removed
-x <- data.frame(foo = 1:6, bar = c("g","h","i","j","k","l"))
-x[[which(x$bar == "h"), "foo"]] # get or set foo in the same row as bar of "h"
-
-x <- list(foo = 1:4, bar = 0.6, baz = "hello")
-x[1] # list containing first element
-x[[1]] # extract from list/data frame, single element, class can change. Ex, numerical vector returned
-x$bar # like [[]] but by name. Ex, return num vector 0.6. Equivalent to x[["bar"]]. Expression x["bar"] returns list of bar. Can use partial matching (x$f = x$foo = x[["f", exact = FALSE]]).
-x[c(1,3)] # multiple object extraction from list, returns list
-name = "foo"
-x[[name]] # must be used if using computed index
-x[1][3] # return element in element in object
-x[[c(1,3)]]
-
-# Subsetting Matrix
-x <- matrix(1:6, 2, 3)
-x [1,2] # returns vector len 1, different that x[2,1]. Get matrix using arg drop = FALSE.
-x[1,] # get num vector of first row, can also get col x[,2]. drop = FALSE also works
-
-# Removing NA values
-x <- c(1,2,NA,4,NA,5)
-bad <- is.na(x) # logical vector indicating presence of NA
-x[!bad] # removes NA values
-
-x[!is.na(x)] # simplified returns vector removing NA values
-
-x <- c(1,2,NA,4,NA,5) # for two vectors
-y <- c("a","b",NA,"d",NA,"f")
-good <- complete.cases(x,y) # logical vectors where there is no NA in either list
-x[good]
-y[good]
-
-# Sum of NA values
-my_na <- is.na(x)
-sum(my_na)
-
-x <- read.csv("hw1_data.csv") # for data frames
-goodVals <- complete.cases(x) # complete rows in the data frame
-x[goodVals,]
 
 ```
 
