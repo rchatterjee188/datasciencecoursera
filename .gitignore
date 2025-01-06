@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 specdata/
+testdir/crimexl.xlsx
+testdir/crimedata.csv
