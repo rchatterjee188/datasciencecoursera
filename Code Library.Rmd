@@ -650,8 +650,8 @@ help(ls) # access documentation on ls() function
 ``` {r readingandwriting}
 
 # Download data from website
-fileUrl <- "https://hubcdn.arcgis.com/opendata-ui/assets/assets/vendor-6c2aec1db9e05d49f9a6ae4a8a86e217.css" # use href in source code
-download.file(fileUrl, destfile = "./testdir/trafficdata.csv", method = "curl") # improve reproducibility. Args: url, destfile, method. curl method is for https (specifically MAC).
+fileUrl <- "https://stg-arcgisazurecdataprod1.az.arcgis.com/exportfiles-1506-24014/Part1_Crime_Beta_5960161298247612570.csv?sv=2018-03-28&sr=b&sig=8KeSXLduFH5b%2Bs4r30dNZ%2FIxL4qPiHHfi4XjwmFZX0I%3D&se=2025-01-06T02%3A30%3A50Z&sp=r"
+if(!file.exists("./testdir/crimedata.csv")) download.file(fileUrl, destfile = "./testdir/crimedata.csv", method = "curl") # improve reproducibility. Args: url, destfile, method. curl method is for https (specifically MAC).
 dateDownloaded <- date() # Keep track of date downloaded for file
 
 # Read table or csv data into R
@@ -666,14 +666,15 @@ classes <- sapply(initial, class)
 tabAll <- read.table("hw1_data.csv", header = TRUE, sep = ",", colClasses = classes)
 
 # Read Excel file into R
-fileUrl <- "https://hubcdn.arcgis.com/opendata-ui/assets/assets/vendor-6c2aec1db9e05d49f9a6ae4a8a86e217.css"
-if (!file.exists("./testdir/crimedata.xlsx")) {
-  download.file(fileUrl, destfile = "./testdir/crimedata.xlsx", method = "curl")
-  dateDownloadedXL <- date()
+x <- "https://stg-arcgisazurecdataprod1.az.arcgis.com/exportfiles-1506-24014/Part1_Crime_Beta_3834807016258906358.xlsx?sv=2018-03-28&sr=b&sig=47D%2FVGpnXbKodvr50TpJ40oOrvovymZfj2zHvDNVjYg%3D&se=2025-01-06T02%3A36%3A24Z&sp=r"
+if(!file.exists("./testdir/crimexl.xlsx")) {
+  download.file(x, destfile = "./testdir/crimexl.xlsx", method = "curl") # improve
+  dateXl <- date()
 }
-#library(xlsx)
-#cameraData <- read.xlsx("./testdir/crimedata.xlsx", sheetIndex = 1, header = TRUE)
-#head(cameraData)
+library(readxl) # xlsx, XLConnect other options
+cameraData <- read_excel("./testdir/crimexl.xlsx", sheet = 1, col_types = "text", n_max = 100)
+head(cameraData)
+# write also works
 
 
 lines <- readLines("coded.R") # reading lines of text file, return character vector
