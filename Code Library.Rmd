@@ -674,6 +674,10 @@ library(readxl) # xlsx, XLConnect other options
 cameraData <- read_excel("./testdir/crimexl.xlsx", sheet = 1, col_types = "text", n_max = 100)
 head(cameraData)
 # write also works
+<<<<<<< HEAD
+=======
+
+>>>>>>> a720f7788ef880e5ce977550d5506ef99ead5616
 
 lines <- readLines("coded.R") # reading lines of text file, return character vector
 writeLines("coded.R")
