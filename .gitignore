@@ -4,3 +4,5 @@
 specdata/
 testdir/crimexl.xlsx
 testdir/crimedata.csv
+API_auth_ex.R
+.httr-oauth
