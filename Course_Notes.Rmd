@@ -1,5 +1,5 @@
 ---
-title: "Course Notes"
+title: "Course_Notes"
 author: "Ruhika Chatterjee"
 date: "2024-12-07"
 output:
@@ -249,3 +249,60 @@ cube(3)
 square(3)
 
 ```
+
+# R Packages
+- Repositories: CRAN, BioConductor (bioinformatics), GitHub  
+- Search: https://www.rdocumentation.org/  
+
+- Base packages: utils, stats, datasets, graphics, grDevices, grid, methods, tools, parallel, compiler, splines, tcltk, stats4.  
+- Recommended packages: boot, class, cluster, codetools, foreign, KernSmooth, lattice, mgcv, nime, rpart, survival, MASS, spatial, nnet, Matrix.  
+``` {r packages}
+# Install from CRAN:
+#   install.packages("ggplot2", repos = "http://cran.us.r-project.org") #install
+#   install.packages(c("labeling","tibble"), repos = "http://cran.us.r-project.org") #multiple
+
+# Install from Bioconductor
+#   install.packages("BiocManager", repos = "https://bioconductor.org/biocLite.R")
+#   BiocManager::install(c("GenomicFeatures", "AnnotationDbi")) #install package
+
+# Install from GitHub (need package, author name)
+#   install.packages("devtools", repos = "http://cran.us.r-project.org") #only once
+#   library(devtools)
+#   install_github("author/package") #installs package
+
+# library(ggplot2)# Load package, careful of dependencies
+# installed.packages() #check installed packages
+# library() #alternate
+# old.packages(repos = "http://cran.us.r-project.org") #check packages to update
+# update.packages(repos = "http://cran.us.r-project.org") #update all packages
+# install.packages("ggplot2") #to update single package
+# detach("package:ggplot2", unload=TRUE) #unload function
+# remove.packages("ggtree") #remove package
+# help(package = "ggplot2") #package info
+# browseVignettes("ggplot2") #extended help files
+
+```
+
+# R Profiler and Optimization
+- Systematic way to examine time spent in various part of the program. Useful to optimize the code.  
+- DON'T PREMATURELY OPTIMIZE  
+- Measure, not guess, data on what needs to be optimized.  
+- User time: computer experienced, may be greater if multiple cores/processors (accessible in multi-threaded BLAS libraries). Elapsed time: wall-clock time, may be greater if other computing tasks.  
+``` {r profiler}
+system.time(read.csv("hw1_data.csv")) # returns seconds to execute, if error then seconds to error. Wrap longer expression in arguement in curly braces. Assumption htat you know where the problem is.
+
+data(mtcars)
+Rprof() # track function call stack at intervals (def = 0.02 sec), time spent in functions.
+
+fit <- lm(mtcars$mpg ~ mtcars$cyl)
+
+Rprof(NULL)
+
+summaryRprof() # makes Rprof readable, tabluates, time in each function
+# $by.total - divides time spent per function by total run time
+# $by.self - same as by.total but first subtracts time spent in function above in call stack. Helps target.
+
+rm(list=ls())
+
+```
+
