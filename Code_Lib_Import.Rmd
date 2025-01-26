@@ -1,0 +1,327 @@
+---
+title: "Code_Lib_Import"
+author: "Ruhika Chatterjee"
+date: "2025-01-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Getting the Data
+
+### Defining Workspace or directory
+``` {r dirws}
+x <- getwd() # find working directory
+x
+dir.create("testdir") # create a directory if doesn't exist, args: dir name, for nested recursive = true
+setwd("testdir") # set working dir
+file.create("mytest.R") # create file in wd
+file.exists("mytest.R") # check if file or directory exists in wd
+file.info("mytest.R") # file metadata, use $ operator to grab specific items
+file.rename("mytest.R","mytest2.R") # rename
+file.copy("mytest2.R","mytest3.R") # copy file
+file.remove("mytest2.R") # remove file
+file.path("mytest3.R") # relative path
+setwd(x) # could use relative setwd("../") to move up one, setwd("./data"), or absolute path directly using setwd("C:\\Users\\Owner\\OneDrive\\Documents")
+
+dir() # output files in directory. Also list.files()
+files_full <- list.files("specdata", full.names=TRUE) # pull all file names from a directory
+ls() # prints the objects in work space
+rm(list=ls()) # clear workspace
+rm(list=setdiff(ls(), "x")) # clear workspace except x
+version #R info version
+sessionInfo() #R info version, packages
+source("coded.R") # load code into console
+args(ls()) # get arguments for a function
+help(ls) # access documentation on ls() function
+?ls # same. for operator use ?`:`
+
+# Interface to outside world
+file(description = "hw1_data.csv") # open connection to standard, uncompressed file. Helps for partial file reading. description = file name, open = "r"(read only), "w" (writing and initializing new file), "a" (appending), "rb"/"wb"/"ab" in binary (Windows)
+# gzfile() # connection to file w compression gzip
+# bzfile() # connection to file w compression bzip2
+jh <- url("http://www.jhsph.edu", "r") # connection to webpage
+close(jh) # to end connection
+
+# Download data from website
+fileUrl <- "https://stg-arcgisazurecdataprod1.az.arcgis.com/exportfiles-1506-24014/Part1_Crime_Beta_5960161298247612570.csv?sv=2018-03-28&sr=b&sig=8KeSXLduFH5b%2Bs4r30dNZ%2FIxL4qPiHHfi4XjwmFZX0I%3D&se=2025-01-06T02%3A30%3A50Z&sp=r"
+if(!file.exists("./testdir/crimedata.csv")) download.file(fileUrl, destfile = "./testdir/crimedata.csv", method = "curl") # improve reproducibility. Args: url, destfile, method. curl method is for https (specifically MAC).
+dateDownloaded <- date() # Keep track of date downloaded for file
+
+```
+
+### CSV and XLSX
+``` {r csvxlsx}
+# Read table or csv data into R
+x <- read.table("hw1_data.csv", header = TRUE, sep = ",") # reading tabular data from text files, return data frame, reads into RAM (best for smaller data). Args: file (name, connection), header (logical if header line present), sep (string indicating column separator), colClasses (character vector of class of each column), nrows (number of rows), comment.char (character string indicating comment character), skip (number of lines to skip from beginning), stringsAsFactors (logical if character variables coded as factors, default true), na.strings (set char represent missing value). Efficient. Default separator " " and header = FALSE. Check help page to optimize for large datasets, set comment.char = "" to optimize if no comments present, use colClasses, nrow (memory).
+head(x)
+x <- read.csv("hw1_data.csv") # Same but default separator is ", "  and header = TRUE
+# write.table(x)
+
+# help read.table with colClasses with smaller sample
+initial <- read.table("hw1_data.csv", header = TRUE, sep = ",", nrows = 100)
+classes <- sapply(initial, class)
+tabAll <- read.table("hw1_data.csv", header = TRUE, sep = ",", colClasses = classes)
+
+# Read Excel file into R
+x <- "https://stg-arcgisazurecdataprod1.az.arcgis.com/exportfiles-1506-24014/Part1_Crime_Beta_3834807016258906358.xlsx?sv=2018-03-28&sr=b&sig=47D%2FVGpnXbKodvr50TpJ40oOrvovymZfj2zHvDNVjYg%3D&se=2025-01-06T02%3A36%3A24Z&sp=r"
+if(!file.exists("./testdir/crimexl.xlsx")) {
+  download.file(x, destfile = "./testdir/crimexl.xlsx", method = "curl") # improve
+  dateXl <- date()
+}
+library(readxl) # xlsx, XLConnect other options
+cameraData <- read_excel("./testdir/crimexl.xlsx", sheet = 1, col_types = "text", n_max = 100)
+head(cameraData)
+# write also works
+
+```
+
+
+# Read text file and R objects
+``` {r text_r_objs}
+
+lines <- readLines("coded.R") # reading lines of text file, return character vector
+writeLines("coded.R")
+
+# editable textual format retains metadata, helpful for version control, corruption fixable, memory cost
+dget("coded.R") # reading R objects deparsed into text files
+dput("coded.R") # takes R object, create R code to reconstruct object saving attributes, names
+
+
+source("coded.R") # reading in R code files
+#dump() # multiple R objects
+
+# load() # read in saved workspace read binary objects into R
+# save()
+# unserialize() # read single R objects in binary form
+# serialize()
+
+```
+
+### Just XML stuff
+- XML (extensible markup language)  
+- <http://en.wikipedia.org/wiki/XML>  
+- store structured data in internet applications. From web scraping, API  
+- Components: markup (labels for structure) and content (text)  
+- Tags (labels): start <section> end </section> empty <line-break />  
+- Elements: example of tag <Greeting> Hello, world </Greeting>  
+- Attributes: component of label <img src="jeff.jpg" alt="instructor"/>  
+
+- XPath language: <http://www.stat.berkeley.edu/~statcur/Workshop2/Presentations/XML.pdf>  
+- /node (top level node), //node (node any level), node[@attr-name] node w attr name, node[@attr-name='bob']
+- XML Short Intro: <https://www.omegahat.net/RSXML/shortIntro.pdf>  
+- XML Long Intro: <https://www.omegahat.net/RSXML/Tour.pdf>
+
+``` {r xml}
+# Reading file
+library(XML)
+library(httr)
+fileUrl <- "https://www.w3schools.com/xml/simple.xml"
+doc <- xmlTreeParse(rawToChar(GET(fileUrl)$content),useInternalNodes = TRUE) # read file into R to parse
+rootNode <- xmlRoot(doc) # wrapper for structured element
+
+# Access Data
+xmlName(rootNode) # name of xml
+names(rootNode) # names of root node
+rootNode[[1]] # first food element, get first subelement of element using [[1]][[1]]
+xmlSApply(rootNode,xmlValue) # give xml value of each root node
+xpathSApply(rootNode,"//name",xmlValue) # get node xmlValue for each names
+xpathSApply(rootNode,"//price",xmlValue)
+
+# Pokemon
+library(rvest)
+fileUrlBase <- "https://pokemondb.net/pokedex/stats/gen"
+generations <- 1:8
+# Scrape Data
+pokemonList <- lapply(generations,function(x){
+  html <- read_html(paste0(fileUrlBase,x)) # create URL
+  tableNode <- html_node(html,xpath="//*[(@id = 'pokedex')]") # read HTML, extract node using xpath selector
+  data <- html_table(html,header=TRUE)[[1]] # convert to data frame
+  colnames(data)[1] <- "ID"
+  data$Generation <- x # add generation ID
+  data # return data frame to list
+})
+thePokemon <- do.call(rbind,pokemonList) # one data frame
+# Cleaning
+types <- strsplit(gsub('[a-z]\\K(?=[A-Z])', ' ',thePokemon$Type, perl=T)," ") # split Type column
+thePokemon$Type1 <- unlist(lapply(types,function(x) x[1])) # Type1 column
+thePokemon$Type2 <- unlist(lapply(types,function(x) ifelse(is.na(x[2])," ",x[2]))) # Type2 column
+pokemonNames <- strsplit(gsub('[a-z]\\K(?=[A-Z])', '--', thePokemon$Name, perl=T),"--") # split Name
+thePokemon$Name <- unlist(lapply(pokemonNames,function(x) x[1]))
+thePokemon$Form <- unlist(lapply(pokemonNames,function(x) ifelse(is.na(x[2])," ",x[2])))
+thePokemon <- thePokemon[,c(1,2,14,12,13,4,5,6,7,8,9,10,11)] # reorder and remove unneccesary
+thePokemon[29,"Name"] <- "Nidoran" # cleaning gender
+thePokemon[29,"Form"] <- "Female"
+thePokemon[32,"Name"] <- "Nidoran"
+thePokemon[32,"Form"] <- "Male"
+
+```
+
+### Just JSON Stuff
+- Javascript Object Notation- light weight data storage, common format from APIs, similar to XML but different syntax/format.  
+- Data stored as: number(double), strings(double quoted), boolean, array(ordered, comma sep, [] enclosed), objects(unordered, comma sep, {} enclosed, key:value pairs).  
+- <http://en.wikipedia.org/wiki/JSON>  
+- <http://www.json.org/>  
+- jsonlite vignette  
+- <http://www.r-bloggers.com/new-package-jsonlite-a-smarter-json-encoderdecoder/>
+
+``` {r json}
+library(jsonlite)
+jsonData <- fromJSON("https://api.github.com/users/jtleek/repos") # can pass any format
+names(jsonData) # names of data frame
+names(jsonData$owner) # names of column
+jsonData$owner$login # who logged in
+
+# write data frame to JSON
+myjson <- toJSON(iris, pretty = TRUE)
+cat(myjson)
+
+# upload again
+iris2 <- fromJSON(myjson)
+head(iris2)
+
+```
+
+### mySQL Stuff
+- Free, widely-used open source database, esp in internet-based applications.  
+- Data structured in databases, inside is tables(dataset), inside is fields(column), row is record. IDs link databases.  
+- <http://en.wikipedia.org/wiki/MySQL> and <http://www.mysql.com/>  
+- Install MySQL: <https://dev.mysql.com/doc/refman/5.7/en/installing.html>  
+- <http://cran.r-project.org/web/packages/RMySQL/RMySQL.pdf>  
+- Commands: <http://www.pantz.org/software/mysql/mysqlcommands.html> and <http://www.r-bloggers.com/mysql-and-r>  
+- Be careful with SQL commands, *DO NOT PUSH UNLESS REQUIRED!*  
+
+``` {r sql}
+library (RMySQL)
+ucscDb <- dbConnect(MySQL(), user="genome",host="genome-mysql.cse.ucsc.edu") # open a connection to the mySQL database
+result <- dbGetQuery(ucscDb, "show databases;"); dbDisconnect(ucscDb); # run the mySQL command "show databases;" on the database and return boolean for disconnect
+result # print available databases
+
+hg19 <- dbConnect(MySQL(), user="genome", db = "hg19", host="genome-mysql.cse.ucsc.edu") # connection to a specific database
+allTables <- dbListTables(hg19) # extract names of all tables
+length(allTables)
+allTables[1:5]
+dbListFields(hg19,"affyU133Plus2") # fields/columns of table affyU133Plus2 (is a microarray)
+dbGetQuery(hg19, "select count(*) from affyU133Plus2") # how many rows/record. Pass mySQL command to count records to getQuery function
+library(knitr) # to supress warnings
+suppressWarnings({ affyData <- dbReadTable(hg19, "affyU133Plus2") }) # import data from table in mySQL into a dataframe
+head(affyData)
+suppressWarnings({ query <- dbSendQuery(hg19, "select * from affyU133Plus2 where misMatches between 1 and 3") }) # subset tables for cases where one field is as specified, stored in database, remember to clear it.
+affyMis <- fetch(query); quantile(affyMis$misMatches) # fetch subset from database and run quantile on field
+affyMisSmall <- fetch(query,n=10); dbClearResult(query);# fetch top 10 records
+dim(affyMisSmall)
+dbDisconnect(hg19) # CLOSE CONNECTION
+
+```
+
+### Just HDF5 Stuff
+- Large data sets, store range of data types, Hierarchical Data Format.  
+- Groups of 0+ data sets and their metadata: group header (with name and list of attributes) and group symbol table (with list of objects in groups).  
+- Datasets are multi-dimensional array of data elements with their metadata: header (with name, datatype, dataspace, and storage layout) and data array (containing data).  
+- <http://www.hdfgroup.org/>  
+- Install: if (!require("BiocManager", quietly = TRUE))   install.packages("BiocManager"); BiocManager::install(version = "3.20"); BiocManager::install(pkgs=c("rhdf5"));  
+- <https://www.bioconductor.org/packages/release/bioc/html/rhdf5.html>  
+
+``` {r hdf5}
+library(rhdf5)
+file.remove("example.h5")
+created = h5createFile("example.h5") # create hdf5 file
+created
+created = h5createGroup("example.h5","foo") # greate group with given name inside h5
+created = h5createGroup("example.h5","baa")
+created = h5createGroup("example.h5","foo/foobaa") # create subgroup
+h5ls("example.h5") # list components of h5 file
+A <- matrix(1:10,nrow=5,ncol=2)
+h5write(A, "example.h5","foo/A") # write object to group
+B <- array(seq(0.1,2.0,by=0.1),dim=c(5,2,2))
+attr(B,"scale") <- "liter" # can include metadata
+h5write(B, "example.h5","foo/foobaa/B")
+h5ls("example.h5")
+df <- data.frame(1L:5L,seq(0,1,length.out=5), c("ab","cde","fghi","a","s"), stringsAsFactors = FALSE)
+h5write(df, "example.h5","df") # write data set to top level group
+h5ls("example.h5")
+h5read("example.h5","foo/A") # read data from hf file
+h5write(c(12,13,14),"example.h5","foo/A",index=list(1:3,1)) # can read and write (in this case edit) in chunks, even inside groups
+h5read("example.h5","foo/A")
+
+```
+
+### HTML and Webscraping
+- Webscraping: programatically extracting data from HTML code of websites. Be careful of Terms of Service and speed of scraping...  
+- <http://en.wikipedia.org/wiki/Web_scraping>  
+- <http://www.r-bloggers.com/?s=Web+Scraping>  
+- <http://cran.r-project.org/web/packages/httr/httr.pdf>  
+
+``` {r webscraping}
+con = url("https://scholar.google.com/citations?user=HI-I6C0AAAAJ&hl=en") # open connection to website using url function
+htmlCode = readLines(con) # extract file lines into a char vector
+close(con) # REMEMBER
+htmlCode[1] # Hard to read
+
+# alternate method: XML
+library(XML)
+url <- "http://web.archive.org/web/20130207021632/http://scholar.google.com:80/citations?user=HI-I6C0AAAAJ&hl=en" # need old page for proper format :/
+html <- htmlTreeParse(url,useInternalNodes = TRUE) # parsing file using internal nodes
+xpathSApply(html, "//title", xmlValue) # use sApply for clean vector. Accessing title
+xpathSApply(html, "//td[@id='col-citedby']", xmlValue) # accessing elements of table
+
+# alternate method: httr and GET
+library(httr)
+html2 <- GET("https://scholar.google.com/citations?user=HI-I6C0AAAAJ&hl=en")
+content2 <- content(html2, as = "text") # extract content from HTML page as one text string
+parsedHtml <- htmlParse(content2, asText = TRUE) # parse the text, same as xml package result
+xpathSApply(parsedHtml, "//title", xmlValue)
+
+# passwords
+url <- "http://httpbin.org/basic-auth/user/passwd"
+pg1 <- GET(url)
+pg1 # not authenticated, passes status 401
+pg2 <- GET(url, authenticate("user","passwd")) # sends authentication
+pg2
+names(pg2)
+
+# use handles
+google <- handle("http://google.com") # to save authentication across multiple accesses to website
+pg1 <- GET(handle = google, path = "/")
+pg2 <- GET(handle = google, path = "search")
+
+```
+
+### APIs
+- Application programming interfaces.  
+- Developed platform will have GET request URLs (and parameters), which you use in httr to get data. Need a API/dev account, need to submit a request (for each project!). Receive: consumer key, consumer secret, request token URL, and Authorization URL.  
+- Able to GET, POST, PUT, DELETE with httr if authorized.  
+- Need oauth in most cases, sometimes username/password allowed.  
+- Sites: Facebook, Google, Twitter, GitHub...  
+
+``` {r api}
+# in personal vault :)
+
+rm(list=ls())
+```
+
+### Other Sources
+
+Packages for Data Storage Mechanisms
+- Search Google: "data storage mechanism R package"  
+- ?connections to get info on creating connection (CLOSE)  
+- foreign package: loads data from Minitab, S, SAS, SPSS, Stata, Systat. read.lang. <http://cran.r-project.org/web/packages/foreign/foreign.pdf>  
+- RPostresSQL: <https://code.google.com/p/rpostgresql/>, <http://cran.r-project.org/web/packages/RPostgreSQL/RPostgreSQL.pdf>  
+- RODBC (PostgreQL, MySQL, Microsoft Access, SQLite): <http://cran.r-project.org/web/packages/RODBC/vignettes/RODBC.pdf>, <http://cran.r-project.org/web/packages/RODBC/RODBC.pdf>  
+- RMongo/rmongodb: <http://cran.r-project.org/web/packages/RMongo/RMongo.pdf>, <http://www.r-bloggers.com/r-and-mongodb>  
+
+Image Data
+- jpeg: <http://cran.r-project.org/web/packages/jpeg/index.html>  
+- readbitmap: <http://cran.r-project.org/web/packages/readbitmap/index.html>  
+- png: <http://cran.r-project.org/web/packages/png/index.html>  
+- EBImage (Bioconductor): <http://www.bioconductor.org/packages/2.13/bioc/html/EBImage.html>  
+
+GIS Data
+- raster: <http://cran.r-project.org/web/packages/raster/index.html>  
+- 'sf' and 'terra'  
+
+Musical Data
+- tuneR: <http://cran.r-project.org/web/packages/tuneR/>  
+- seewave: <http://rug.mnhn.fr/seewave>
