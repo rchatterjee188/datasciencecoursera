@@ -46,9 +46,13 @@ jh <- url("http://www.jhsph.edu", "r") # connection to webpage
 close(jh) # to end connection
 
 # Download data from website
-fileUrl <- "https://stg-arcgisazurecdataprod1.az.arcgis.com/exportfiles-1506-24014/Part1_Crime_Beta_5960161298247612570.csv?sv=2018-03-28&sr=b&sig=8KeSXLduFH5b%2Bs4r30dNZ%2FIxL4qPiHHfi4XjwmFZX0I%3D&se=2025-01-06T02%3A30%3A50Z&sp=r"
-if(!file.exists("./testdir/crimedata.csv")) download.file(fileUrl, destfile = "./testdir/crimedata.csv", method = "curl") # improve reproducibility. Args: url, destfile, method. curl method is for https (specifically MAC).
+fileUrl <- "https://hub.arcgis.com/api/v3/datasets/42f8856d647a41b89561e10fb60bc98a_0/downloads/data?format=csv&spatialRefId=3857&where=1%3D1"
+if(!dir.exists("./testdir")) {
+  dir.create("./testdir")
+}
+download.file(fileUrl, destfile = "./testdir/restdata.csv", method = "curl") # improve reproducibility. Args: url, destfile, method. curl method is for https (specifically MAC).
 dateDownloaded <- date() # Keep track of date downloaded for file
+restdata <- read.csv("./testdir/restdata.csv")
 
 ```
 
@@ -66,13 +70,13 @@ classes <- sapply(initial, class)
 tabAll <- read.table("hw1_data.csv", header = TRUE, sep = ",", colClasses = classes)
 
 # Read Excel file into R
-x <- "https://stg-arcgisazurecdataprod1.az.arcgis.com/exportfiles-1506-24014/Part1_Crime_Beta_3834807016258906358.xlsx?sv=2018-03-28&sr=b&sig=47D%2FVGpnXbKodvr50TpJ40oOrvovymZfj2zHvDNVjYg%3D&se=2025-01-06T02%3A36%3A24Z&sp=r"
-if(!file.exists("./testdir/crimexl.xlsx")) {
-  download.file(x, destfile = "./testdir/crimexl.xlsx", method = "curl") # improve
-  dateXl <- date()
-}
+x <- "https://stg-arcgisazurecdataprod1.az.arcgis.com/exportfiles-8298-626/Hfai_6672659153760215301.xlsx?sv=2018-03-28&sr=b&sig=RYn1V2YsQcOT0pTyJgcJxUJ9St0OfhLlVbYB7vWJLoA%3D&se=2025-01-28T01%3A38%3A40Z&sp=r"
+if(!file.exists("./testdir/foodavail.xlsx")) {
+  file.create("./testdir/foodavail.xlsx") }
+download.file(x, destfile = "./testdir/foodavail.xlsx", method = "curl") # improve
+dateXl <- date()
 library(readxl) # xlsx, XLConnect other options
-cameraData <- read_excel("./testdir/crimexl.xlsx", sheet = 1, col_types = "text", n_max = 100)
+cameraData <- read_excel("./testdir/foodavail.xlsx", sheet = 1, col_types = "text", n_max = 100)
 head(cameraData)
 # write also works
 
