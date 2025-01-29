@@ -53,7 +53,7 @@ pi:10 # will not exceed 10, start from pi, increment by 1
 seq(1,20) # same as :
 seq(0,10,by=0.5) # to change increment
 seq(5,10,length=30) # to not set increment but number of numbers
-seq_along(x) # vector of same length 1:length(x)
+seq_along(c(1,3,8,25,100)) # vector of same length 1:length(x) or seq(along=c(1,3,8,25,100))
 rep(10, times = 4) # repeats 10 4 times in vector
 rep(c(0, 1, 2), times = 10) # repeats sequence of vector 10 times. Arg each can be used to repeat first, then second... element in vector.
 
@@ -75,222 +75,23 @@ rbind(1:3,10:12) # same but using rows
 
 # factors
 # self-describing type of vector representing categorical data, ordered or unordered (labels)
-x <- factor(c("male","female","female","female","male")) # character vector with specific linear modeling capabilities, levels also in output
+x <- factor(c("male","female","female","female","male")) # character vector with specific linear modeling capabilities, levels also in output. Must set levels if want to order, auto alphabetical.
 f <- gl(3,10) # factor 3 levels, 10 times each
+yesno <- factor(sample(c("yes","no"), size = 10, replace = TRUE)) # randomly generate factor vector
+relevel(yesno, ref = "yes") # change oder of levels
 table(x) # prints counts of each factor
 
-```
 
-### Data Frames
-``` {r dataframe}
+# Data Frames
 # stores tabular/rectangular data, stored as lists of same length where each element is a column, length of element is number of rows. Different classes possible
 x <- data.frame(foo=1:4, bar=c(T,T,F,F)) # creates data frame 2 columns foo and bar, 4 rows unnamed. Can also combine with matrices
-x <- read.table(file = "hw1_data.csv", header = TRUE, sep = ",") # read in data from file
-x <- read.csv("hw1_data.csv") # same
-
-```
-
-### Date and Time Data Types
-``` {r datetime}
-# useful for time-series data (temporal changes) or other temporal info
-# lubridate package by Hadley Wickham
-
-# Dates and Times
-birthday <- as.Date("1970-01-01") # dates are date class defined by converting character string, year-month-day, stored as number of days since 1970-01-01 (previous is negative)
-today <- Sys.Date()
-
-currentTime <- Sys.time()# time by POSIXct(large integer vector, useful in dataframe) or POSIXlt(list, other info stored like day) class, stored internally as number of seconds since 1970-01-01 or list, respectively
-timedefined <- as.POSIXct("2012-10-25 06:00:00") # convert char vector, can define timezone
-cTConvert <- as.POSIXlt(currentTime) # reclass, works other way
-cTConvert$min # to subset list
-
-datestring <- c("January 10, 2012 10:40", "December 9, 2011 9:10")
-x <- strptime(datestring, "%B %d, %Y %H:%M") # Convert character vector to POSIXlt by defining format (format string)
-x
-
-weekdays(birthday) # return day of week, date or time classes
-months(birthday) # return month on date or time
-quarters(birthday) # return quarter of date or time
-
-# Operations
-# CANNOT MIX CLASSES - convert
-# add and subtract dates, compare dates
-currentTime - timedefined # time difference, track of discrepancies (i.e. daylightsavings, timezones, leap time, etc). Can do + and - or <, >, <=, >=, ==, !=.
-difftime(currentTime, timedefined, units = "days") # to specify unit
-
-rm(list=ls())
-
-```
-
-
-# Basic R Functions
-
-### Functions and Operations
-``` {r basic}
-# Input and Evaluation
-x <- 1 # assignment operator, evaluates and returns
-print(x) # print value as vector
-x # auto-prints
-# in console, press Tab for auto-completion
-LETTERS # predefined character vector of capital letters
-# <<- operator can be used to assign a value to an object in an environment that is different from the current environment
-
-# Mathematical and Statistical Functions
-5 + 7 # basic arithmetic operations all work +, -, *, /, ^, %% (modulus). NA affects operation.
-sqrt(4) # square root
-abs(-1:2) # absolute value
-mean(c(3,4,5,6,7)) # return mean of numeric vector
-sd(c(3,4,5,6,7)) # returns standard deviation of numeric vector
-cor(c(3,4,5,6,7), c(61,47,18,18,5)) # correlation of x and y vectors make sure to set arg use for NAs
-range(c(3,4,5,6,7)) # returns min and max as numeric vector of 2
-quantile(c(3,4,5,6,7), probs = 0.25) # returns 25th percentile
--c(0.5,0.8,10) # distributes the negative to all elements of vector
-
-# vectorized operations
-x <- 1:4; y <- 6:9 # different length vectors
-x + y # add the elements of the vectors, all operators work
-x > 2 # returns logical vector, >= or == or any of the logical expressions work
-
-# Matrix Operations
-x <- matrix(1:4,2,2); y <- matrix(rep(10,4),2,2)
-x * y # element wise multiplication, for all operators
-x %*% y # matrix multiplication
-
-x <- matrix(rnorm(200), 20, 10)
-rowSums(x) # vector of sum of rows
-rowMeans(x) # vector of mean of rows
-colSums(x) # vector of sum of cols
-colMeans(x) # vector of mean of cols
-x <- matrix(rnorm(100), 10, 10)
-solve(x) # returns inverse of matrix if invertible
-
-# Logical operators
-5 >= 2 # returns logical. <, >, <=, >=, ==, !=. NA in expression returns NA. Can also use to compare logical vectors themselves.
-TRUE | FALSE # OR A|B union, AND A&B intersection, NOT !A negation. & operates across vector, && evaluates first element of vector. Order of operations: AND before OR
-isTRUE(6 > 4) # also evaluates logical expression
-xor(5 == 6, !FALSE) # only returns TRUE if one is TRUE, one is FALSE
-which(c(1,2,3,4,5,6) < 2) # returns indices of logical vector where element is TRUE
-any(c(1,2,3,4,5,6) < 2) # returns TRUE if any of the logical index values are TRUE
-all(c(1,2,3,4,5,6) < 2) # returns TRUE only if all the elements of vector are TRUE
-
-# Character functions
-paste(c("My","name","is"),collapse = " ") # join elements into one element, can join multiple vectors with multiple arguments, adds element-by-element with coersion and recycling
-c (c("My","name","is"), "Bob") # add to the vector
-
-# Factors functions
-x <- factor(c("male","female","female","female","male")) # can include levels argument to set order (baseline is first) otherwise alphabetical
-x # prints values in vector and levels
-table(x) # prints labels and counts present
-unclass(x) # strips class to integer with levels of labels
-
-# Display Data Functions
-print(data.frame(foo = 1:20, rar = 301:320)) # print whole object
-head(data.frame(foo = 1:20, rar = 301:320)) # prints preview of first 6 lines
-tail(data.frame(foo = 1:20, rar = 301:320)) # prints preview of last 6 lines
-table(c(1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,4,4,5)) # returns table of counts
-summary(c(3,4,5,6,7)) # result summaries of the results of various model fitting functions based on class
-unique(c(3,4,5,6,7,3,3,5,7,2,8,3,5,6)) # returns only unique elements, duplicates removed
-
-# str function - compactly display internal structure of R object (esp large lists). Diagnostic, alternative to summary()
-str(unclass(as.POSIXlt(Sys.time()))) # prints list clearly
-str(lm) # list of function arguments
-str(rnorm(100,2,4)) # type of vector, length, first 5 elements
-str(gl(40,10)) # for factors
-
-# Missing Values
-# represented as NA (missing, with specified class) or NaN (missing or undefined)
-# NaN is NA but NA not always NaN
-is.na(c (1,2,NA,5,6,NA, NA,3, NaN)) # output logical vector of length of input
-is.nan(c (1,2,NaN,5,6,NA, NaN,3)) # output logical vector of length of input
-
-```
-
-
-### Attributes of objects
-``` {r attributes}
-x <- c(0.5,105,10,0.1,2)
-class(x) # determine class of object
-attributes(x) # function to return or modify attributes of object
-identical(x,x) # returns logical for if two objects are identical
-length(x) # to specifically get the length of vector
-dim(x) # to get dimensions of matrix, data frame (row, column)
-object.size(x) # return memory occupied in bytes
-as.numeric(0:6) # explicit coercion, works on all atomic classes, if not possible converts to NA and warning
-
-# data frames
-row.names(x) # get and set row names (attributes). Can also use rownames(x)
-colnames(x) # get and set row names
-nrow(x) # number of rows
-ncol(x) # number of columns
-data.matrix(x) # converts data frame to matrix, coercion
-dim(x) # (row, column) dimensions of data frame
-
-# names attribute
-x <- 1:3
-names(x) # is null
-names(x) <- c("foo","bar","norf") #now not numbered vector but named, print x and names(x) with names
-vect <- c(foo = 11, bar = 2, norf = NA) # adds elements with names to vector directly
-# also for lists, names vectors not items
-m <- matrix(1:4,nrow = 2, ncol = 2)
-dimnames(m) <- list(c("a","b"),c("c","d")) # each dimension has a name for matrices, rows names then columns
-
-```
-
-### Indexing, Subsetting, and Dealing with NAs
-``` {r indexing}
-# Subsetting R Objects
-x <- c("a","b","c","c","d","a")
-x[1] # more than one element extracted, returns same class as the original, numeric/logical index
-x[1:4] # sequence of num index
-x[x>"a"] # logical indexing, returns vector where logical is true
-u <- x > "a" # create logical vector
-x[u] # same as x[x>"a"]
-x[!is.na(x) & x > 0] # returns only positive, non NA values
-x[c(-2, -10)] # returns vector with 2nd and 10th elements removed
-x <- data.frame(foo = 1:6, bar = c("g","h","i","j","k","l"))
-x[[which(x$bar == "h"), "foo"]] # get or set foo in the same row as bar of "h"
-
-x <- list(foo = 1:4, bar = 0.6, baz = "hello")
-x[1] # list containing first element
-x[[1]] # extract from list/data frame, single element, class can change. Ex, numerical vector returned
-x$bar # like [[]] but by name. Ex, return num vector 0.6. Equivalent to x[["bar"]]. Expression x["bar"] returns list of bar. Can use partial matching (x$f = x$foo = x[["f", exact = FALSE]]).
-x[c(1,3)] # multiple object extraction from list, returns list
-name = "foo"
-x[[name]] # must be used if using computed index
-x[1][3] # return element in element in object
-x[[c(1,3)]]
-
-# Subsetting Matrix
-x <- matrix(1:6, 2, 3)
-x [1,2] # returns vector len 1, different that x[2,1]. Get matrix using arg drop = FALSE.
-x[1,] # get num vector of first row, can also get col x[,2]. drop = FALSE also works
-
-# Removing NA values
-x <- c(1,2,NA,4,NA,5)
-bad <- is.na(x) # logical vector indicating presence of NA
-x[!bad] # removes NA values
-
-x[!is.na(x)] # simplified returns vector removing NA values
-
-x <- c(1,2,NA,4,NA,5) # for two vectors
-y <- c("a","b",NA,"d",NA,"f")
-good <- complete.cases(x,y) # logical vectors where there is no NA in either list
-x[good]
-y[good]
-
-# Sum of NA values
-my_na <- is.na(x)
-sum(my_na)
-
-x <- read.csv("hw1_data.csv") # for data frames
-goodVals <- complete.cases(x) # complete rows in the data frame
-x[goodVals,]
 
 ```
 
 ### Data Tables (not Frames)
 - Package, faster and more memory efficient  
 - Inherets from data.frame (all functions), written in C, faster at sub-setting, grouping, and updating  
+- Much faster reading time and different operations
 - <http://stackoverflow.com/questions/13618488/what-you-can-do-with-data-frame-that-you-cant-in-data-table>  
 - <https://github.com/Rdatatable/data.table>  
 
@@ -330,11 +131,285 @@ setkey(DT1,x); setkey(DT2,x)
 merge(DT1,DT2) # uses keys to merge
 
 # fast reading in data.table
-big_df <- data.frame(x=rnorm(1E6),y=rnorm(1E6))
+big_df <- data.frame(x=rnorm(1E5),y=rnorm(1E5))
 file <- tempfile()
 write.table(big_df, file=file, row.names=FALSE, col.names=TRUE, sep="\t", quote=FALSE)
 system.time(fread(file)) # basically read.table for csv
 system.time(read.table(file,header=TRUE,sep="\t"))
+
+```
+
+### Date and Time Data Types
+``` {r datetime}
+# useful for time-series data (temporal changes) or other temporal info
+# lubridate package by Hadley Wickham
+
+# Dates and Times
+birthday <- as.Date("1970-01-01") # dates are date class defined by converting character string, year-month-day, stored as number of days since 1970-01-01 (previous is negative)
+today <- Sys.Date()
+
+currentTime <- Sys.time()# time by POSIXct(large integer vector, useful in dataframe) or POSIXlt(list, other info stored like day) class, stored internally as number of seconds since 1970-01-01 or list, respectively
+timedefined <- as.POSIXct("2012-10-25 06:00:00") # convert char vector, can define timezone
+cTConvert <- as.POSIXlt(currentTime) # reclass, works other way
+cTConvert$min # to subset list
+
+datestring <- c("January 10, 2012 10:40", "December 9, 2011 9:10")
+x <- strptime(datestring, "%B %d, %Y %H:%M") # Convert character vector to POSIXlt by defining format (format string)
+x
+
+weekdays(birthday) # return day of week, date or time classes
+months(birthday) # return month on date or time
+quarters(birthday) # return quarter of date or time
+
+# Operations
+# CANNOT MIX CLASSES - convert
+# add and subtract dates, compare dates
+currentTime - timedefined # time difference, track of discrepancies (i.e. daylightsavings, timezones, leap time, etc). Can do + and - or <, >, <=, >=, ==, !=.
+difftime(currentTime, timedefined, units = "days") # to specify unit
+
+rm(list=ls())
+
+```
+
+
+# Basic R Functions
+
+### Functions and Operations
+Mathematical functions: <http://www.biostat.jhsph.edu/~ajaffe/lec_winterR/Lecture%202.pdf>  <http://statmethods.net/management/functions.html>
+``` {r basic}
+# Input and Evaluation
+x <- 1 # assignment operator, evaluates and returns
+print(x) # print value as vector
+x # auto-prints
+# in console, press Tab for auto-completion
+LETTERS # predefined character vector of capital letters
+# <<- operator can be used to assign a value to an object in an environment that is different from the current environment
+
+# Mathematical and Statistical Functions
+5 + 7 # basic arithmetic operations all work +, -, *, /, ^, %% (modulus). NA affects operation.
+sqrt(4) # square root
+abs(-1:2) # absolute value
+ceiling(3.275) # round ceiling
+floor(3.275) # round floor
+round(3.275, digits = 1) # round to the num def digits after decimal
+signif(3.275, digits = 2) # digits number of sig figs
+mean(c(3,4,5,6,7)) # return mean of numeric vector
+sd(c(3,4,5,6,7)) # returns standard deviation of numeric vector
+cor(c(3,4,5,6,7), c(61,47,18,18,5)) # correlation of x and y vectors make sure to set arg use for NAs
+range(c(3,4,5,6,7)) # returns min and max as numeric vector of 2
+quantile(c(3,4,5,6,7), probs = 0.25) # returns 25th percentile
+cos(1)
+sin(1)
+log(5) # nat log
+log2(5) # log base 2
+log10(5) # log base 10
+exp(5) # exponentiate x
+-c(0.5,0.8,10) # distributes the negative to all elements of vector
+
+# vectorized operations
+x <- 1:4; y <- 6:9 # different length vectors
+x + y # add the elements of the vectors, all operators work
+x > 2 # returns logical vector, >= or == or any of the logical expressions work
+
+# Matrix Operations
+x <- matrix(1:4,2,2); y <- matrix(rep(10,4),2,2)
+x * y # element wise multiplication, for all operators
+x %*% y # matrix multiplication
+
+x <- matrix(rnorm(200), 20, 10)
+rowSums(x) # vector of sum of rows
+rowMeans(x) # vector of mean of rows
+colSums(x) # vector of sum of cols
+colMeans(x) # vector of mean of cols
+x <- matrix(rnorm(100), 10, 10)
+solve(x) # returns inverse of matrix if invertible
+
+# Logical operators
+5 >= 2 # returns logical. <, >, <=, >=, ==, !=. NA in expression returns NA. Can also use to compare logical vectors themselves.
+TRUE | FALSE # OR A|B union, AND A&B intersection, NOT !A negation. & operates across vector, && evaluates first element of vector. Order of operations: AND before OR
+isTRUE(6 > 4) # also evaluates logical expression
+xor(5 == 6, !FALSE) # only returns TRUE if one is TRUE, one is FALSE
+5 %in% c(1,4,6,8) # checks if value is in the vector
+c(5,6) %in% c(1,4,6,8) # vectorized, each gives logical
+which(c(1,2,3,4,5,6) < 2) # returns indices of logical vector where element is TRUE
+any(c(1,2,3,4,5,6) < 2) # returns TRUE if any of the logical index values are TRUE
+all(c(1,2,3,4,5,6) < 2) # returns TRUE only if all the elements of vector are TRUE
+
+# Character functions
+paste(c("My","name","is"),collapse = " ") # join elements into one element, can join multiple vectors with multiple arguments, adds element-by-element with coersion and recycling
+c (c("My","name","is"), "Bob") # add to the vector
+
+# Factors functions
+x <- factor(c("male","female","female","female","male")) # can include levels argument to set order (baseline is first) otherwise alphabetical
+x # prints values in vector and levels
+table(x) # prints labels and counts present
+unclass(x) # strips class to integer with levels of labels
+
+# Missing Values
+# represented as NA (missing, with specified class) or NaN (missing or undefined)
+# NaN is NA but NA not always NaN
+is.na(c (1,2,NA,5,6,NA, NA,3, NaN)) # output logical vector of length of input
+is.nan(c (1,2,NaN,5,6,NA, NaN,3)) # output logical vector of length of input
+
+# Workspace functions
+x <- 1 # assigns object to x variable in ws
+rm("x") # removes variable x from ws
+rm(list=ls()) # removes all variables from ws
+
+# Misc
+intersect(c(1,2,5,6,7), c(4,2,6,9,6))
+
+```
+
+### Displaying and Summarizing Data
+``` {r display}
+
+# Display Data Functions
+x <- data.frame(foo = 1:20, rar = 301:320)
+print(x) # print whole object
+print(object.size(rnorm(1e5)), units = "Mb") # can format print based on units
+head(x) # prints preview of first 6 lines
+tail(x) # prints preview of last 6 lines
+
+table(c(1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,4,4,5)) # returns table of counts of vector, arg for useNA="ifany" to count NA vals. Can do 2 din tables for multiple variables to chart relationship
+table(c(1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,4,4,5) %in% c(3)) # get summary of logical count if 1 is in next
+warpbreaks$rep <- rep(1:9, len = 54)
+ftable(xtabs(breaks ~., data = warpbreaks)) # display 3D table as single table
+
+summary(c(3,4,5,6,7,3,3,5,7,2,8,3,5,6)) # result summaries of the results of various model fitting functions based on class
+quantile(c(3,4,5,6,7,3,3,5,7,2,8,3,5,6)) # gives stats quantile calculations, look at numerical spread. Arg for probs = c(0.5,0.75,0.9)
+unique(c(3,4,5,6,7,3,3,5,7,2,8,3,5,6)) # returns only unique elements, duplicates removed
+
+# str function - compactly display internal structure of R object (esp large lists). Diagnostic, alternative to summary()
+str(unclass(as.POSIXlt(Sys.time()))) # prints list clearly
+str(lm) # list of function arguments
+str(rnorm(100,2,4)) # type of vector, length, first 5 elements
+str(gl(40,10)) # for factors
+str(data.frame(foo = 1:10, rar = 301:310, bee = c("g","v","e","d","d","s","c","t","h","s")))
+
+```
+
+
+### Attributes of objects
+``` {r attributes}
+x <- c(0.5,105,10,0.1,2)
+class(x) # determine class of object
+attributes(x) # function to return or modify attributes of object
+identical(x,x) # returns logical for if two objects are identical
+length(x) # to specifically get the length of vector
+dim(x) # to get dimensions of matrix, data frame (row, column)
+object.size(x) # return memory occupied in bytes
+as.numeric(0:6) # explicit coercion, works on all atomic classes, if not possible converts to NA and warning
+
+# data frames
+x <- data.frame(foo=1:4, bar=c(T,T,F,F))
+row.names(x) # get and set row names (attributes). Can also use rownames(x)
+colnames(x) # get and set row names
+nrow(x) # number of rows
+ncol(x) # number of columns
+data.matrix(x) # converts data frame to matrix, coercion
+dim(x) # (row, column) dimensions of data frame
+x$cow <- 4:7 # add column called cow
+x <- cbind(x, 4:7) # as above, without name
+rowSums(x) # vector of sum of rows
+rowMeans(x) # vector of mean of rows
+colSums(x) # vector of sum of cols
+colMeans(x) # vector of mean of cols
+
+# names attribute
+x <- 1:3
+names(x) # is null
+names(x) <- c("foo","bar","norf") #now not numbered vector but named, print x and names(x) with names
+vect <- c(foo = 11, bar = 2, norf = NA) # adds elements with names to vector directly
+# also for lists, names vectors not items
+m <- matrix(1:4,nrow = 2, ncol = 2)
+dimnames(m) <- list(c("a","b"),c("c","d")) # each dimension has a name for matrices, rows names then columns
+
+```
+
+### Indexing, Sorting, and Dealing with NAs
+``` {r indexing}
+
+# Subsetting Vector
+x <- c("a","b","c","c","d","a", NA)
+x[1] # more than one element extracted, returns same class as the original, numeric/logical index
+x[1:4] # sequence of num index
+x[x>"a"] # logical indexing, returns vector where logical is true
+u <- x > "a" # create logical vector
+x[u] # same as x[x>"a"]
+x[!is.na(x) & x > 0] # returns only positive, non NA values
+x[c(-2, -10)] # returns vector with 2nd and 10th elements removed
+
+# Sorting vectors
+sort(x)
+sort(x, decreasing = TRUE)
+sort(x, na.last = TRUE) # retains NA vals at end
+
+# Subset data frame
+x <- data.frame(foo = 1:6, bar = c("g","h","i","j","k","l"))
+x[,1] # first column
+x[,"foo"] # foo column, equivalent to x[,1]
+x[1:2,"bar"] # first 2 observations of bar variable
+x[(x$foo >= 2 & x$foo < 4),] # all vars where logical is true of observations
+x[which(x$bar == "h"), "foo"] # get or set foo in the same row as bar of "h", **to deal with NAs**
+x[x$bar %in% c("h","j"),] # subset roes that are as given
+
+# Order data frame
+x <- data.frame(foo = sample(1:6), bar = sample(c("g","h","i","j","k","l")))
+x[order(x$bar),] # sort data frame by given variable
+x$fact <- factor(c(4,4,3,2,3,2))
+x[order(x$fact,x$foo),] # order by first then second arg
+library(plyr)
+arrange(x,bar) # equivalent x[order(x$bar),]
+arrange(x,desc(bar)) # decreasing order
+
+# Cross tabs
+x <- as.data.frame(UCBAdmissions)
+xtabs(Freq ~ Gender + Admit, data = x) # find frequency of admittance based on gender
+
+warpbreaks$rep <- rep(1:9, len = 54)
+xtabs(breaks ~., data = warpbreaks) # value displayed is breaks broken down by all other variables in dataset (rep, tension, wool) create 3D table
+ftable(xtabs(breaks ~., data = warpbreaks)) # display as single table
+
+# Subset list
+x <- list(foo = 1:4, bar = 0.6, baz = "hello")
+x[1] # list containing first element
+x[[1]] # extract from list/data frame, single element, class can change. Ex, numerical vector returned
+x$bar # like [[]] but by name. Ex, return num vector 0.6. Equivalent to x[["bar"]]. Expression x["bar"] returns list of bar. Can use partial matching (x$f = x$foo = x[["f", exact = FALSE]]).
+x[c(1,3)] # multiple object extraction from list, returns list
+name = "foo"
+x[[name]] # must be used if using computed index
+x[1][3] # return element in element in object
+x[[c(1,3)]]
+
+# Subsetting Matrix
+x <- matrix(1:6, 2, 3)
+x [1,2] # returns vector len 1, different that x[2,1]. Get matrix using arg drop = FALSE.
+x[1,] # get num vector of first row, can also get col x[,2]. drop = FALSE also works
+
+
+# Info about NAs
+x <- c(1,2,NA,4,NA,5)
+sum(is.na(x)) # Sum of NA values
+any(is.na(x)) # logical for if NA are present
+
+# Removing NA values
+bad <- is.na(x) # logical vector indicating presence of NA
+x[!bad] # removes NA values
+
+x[!is.na(x)] # simplified returns vector removing NA values
+
+# for two vectors, remove all NAs
+x <- c(1,2,NA,4,NA,5)
+y <- c("a","b",NA,"d","f",NA)
+good <- complete.cases(x,y) # logical vectors where there is no NA in either list
+x[good]
+y[good]
+
+# for data frames, remove all NAs
+x <- read.csv("hw1_data.csv") # for data frames
+goodVals <- complete.cases(x) # complete rows in the data frame
+x[goodVals,]
 
 rm(list=ls())
 
@@ -643,7 +718,225 @@ rm(list=ls())
 # Cleaning Data
 - End of process generate: raw data, tidy data set, code book (metadata) describing each variable and its values in the tidy data set, explicit and exact recipe used to convert raw data to tidy data set and code book.  
 - Raw Data: original source of data i.e. no processing, editing, summarizing. Must process for data analysis (merging, sub-setting, transforming, etc.), be mindful of processing standards. Colloquially may be later step i.e. genome seq but must use rawest.  
-- Processed Data: ready for analysis, steps to reach stage must be recorded. Must: one variable per column, each observation in a separate row, different tables for different types of variables, if multiple tables allow for linking. Useful: top row of variable names which are human readable, save one file per table.   
+- Processed(tidy) Data: ready for analysis, steps to reach stage must be recorded. Must: one variable per column, each observation in a separate row, different tables for different types of variables, if multiple tables allow for linking. Useful: top row of variable names which are human readable, save one file per table.   
 - Code book: info about variables not contained in data incl. units called *Code book*, info about summary choices, info about experimental study design called *Study design*. Often word/text file.  
 - Instruction list: in a computer script where input is raw data and output is tidy data with no parameters to the script. If not possible, provide instructions in steps (incl. parameters, software versions, how to use software).  
 
+### Steps to clean Data
+- Look at the data, summarize to find out quirks, missing values, etc.  
+- Create new data if applicable: i.e. missingness indicators, cutting up quant variables, applying transformations.  
+- Reshape data to the desired format from raw data.  
+
+### Creating new varibales in your data table
+``` {r createnewvar}
+fileUrl <- "https://hub.arcgis.com/api/v3/datasets/42f8856d647a41b89561e10fb60bc98a_0/downloads/data?format=csv&spatialRefId=3857&where=1%3D1"
+if(!dir.exists("./testdir")) {
+  dir.create("./testdir")
+}
+download.file(fileUrl, destfile = "./testdir/restdata.csv", method = "curl")
+dateDownloaded <- date()
+restdata <- read.csv("./testdir/restdata.csv")
+
+# Variable to subset data
+restdata$nearMe <- restdata$nghbrhd %in% c("Roland Park", "Homeland") # create col for logical in restdata
+table(restdata$nearMe) # summarize data
+
+# Create binary varibales
+restdata$walkingDistance <- ifelse(restdata$zipcode == "21210", TRUE, FALSE) # logical using ifelse command, can do a different data type
+table(restdata$walkingDistance, restdata$zipcode == "21210")
+
+# Create categorical variables
+restdata$zipcode <- as.numeric(restdata$zipcode)
+restdata$zipgroups <- cut(restdata$zipcode, breaks  = quantile(restdata$zipcode, na.rm = TRUE)) # cup up the data table based on the zipcodes with given categories, creates factor variables
+table(restdata$zipgroups)
+
+library(Hmisc)
+restdata$zipgroups2 <- cut2(restdata$zipcode, g = 4) # same as above
+table(restdata$zipgroups2)
+
+# Create factor variables
+restdata$zcf <- factor(restdata$zipcode)
+restdata$zcf[1:10]
+as.numeric(restdata$zcf) # helpful in some models
+
+# Mutate function
+library(Hmisc); library(plyr)
+restdata2 <- mutate(restdata, zipgroups3 = cut2(zipcode, g = 4)) # create a new data frame with new variables (zipgroups3) as defined added through mutate
+table(restdata2$zipgroups3)
+
+rm(list = ls())
+
+```
+
+### Reshaping Data
+- <http://vita.had.co.nz/papers/tidy-data.pdf>  
+- <http://www.slideshare.net/jeffreybreen/reshaping-data-in-r>  
+- <http://www.r-bloggers.com/a-quick-primer-on-split-apply-combine-problems/>  
+- Useful functions: acast (multi-dim arrays like dcast), arrange (faster reordering), mutate (add new variables).  
+``` {r reshaping}
+
+library(reshape2); library(plyr)
+head(mtcars)
+
+# Melt data frames
+mtcars$carname <- rownames(mtcars)
+carmelt <- melt(mtcars, id = c("carname","gear","cyl"), measure.vars = c("mpg","hp")) # assign id variables to keep from prev data table, measure variables exist 1 per row, make the data table skinny and long, multiple rows per ID, differentiated by measure vars. One col def variable type, 1 col for the value
+head(carmelt, n=3)
+tail(carmelt, n=3)
+
+# Casting data frames
+dcast(carmelt, cyl ~ variable) # reshape data as cylinders (rows) broken down by the variables (cols) summarizing using length
+dcast(carmelt, cyl ~ variable,mean) # as above, using mean to summarize
+
+# Summing (apply function to) values
+head(InsectSprays)
+tapply(InsectSprays$count, InsectSprays$spray, sum) # take sum of values within same spray value (i.e. factor sum)
+
+spIns <- split(InsectSprays$count, InsectSprays$spray) # split insect spray into different vectors in a list based on spray col
+sapply(spIns, sum) # as tapply above, sum each vector into names vector format
+
+ddply(InsectSprays,.(spray),sum=sum(count)) # get sum using plyr package, list variables to summarize, command to summarize using sum command as listed (of count col). Returns data col
+ddply(InsectSprays,.(spray),sum=ave(count, FUN = sum)) # apply sums then create data frame with sum of each factor in that row. Can use to add to dataset
+
+```
+
+### Managing data frames with dplyr
+- Package designed to work with data frame (assumes tidy data, properly formatted and annotated), can use with R implementation or data.table, SQL(DBI package), or other implementations.  
+- Developed by Hadley Wickham, optimized and distilled plyr (faster, coded low level in C++). Consistent and consise grammar. 
+- Format: first arg is a data frame, subsequent args explain what to do with it. Refer to cols just by name without $ operator. Results in new data frame.  
+
+``` {r dplyr}
+
+library(dplyr)
+
+chicago <- readRDS("chicago.rds")
+str(chicago)
+
+# select: return subset of cols of a data frame
+head(select(chicago, city:dptp)) # use dplyr to select subset of cols by names
+head(select(chicago, -(city:dptp))) # exclude in selection, equivalent to head(chicago[, -(match("city", names(chicago)):match("dptp", names(chicago)))]). Can also do reverse.
+head(select(chicago, city, dptp)) # gives only two named cols as specified
+
+# filter: extract subset of rows from data frame based on logical condition
+chic.f <- filter(chicago, pm25tmean2 > 30) # logical as second arg, creates logical sequence to subset
+head(chic.f, 10)
+head(filter(chicago, pm25tmean2 > 30, tmpd > 80)) # multiple logical, can sep using commas for and
+
+# arrange: reorder rows of a data frame whle preserving order of other cols
+head(arrange(chicago, date)) # arrange dt based on one variable, ascending, can sort by multiple
+chicago <- arrange(chicago, desc(date)) # descending
+
+# rename: rename variables in a data frame
+chicago <- rename(chicago, pm25 = pm25tmean2, dewpoint = dptp) # renames multiple variables
+str(chicago)
+
+# mutate: add new variables/columns or transform existing variables
+chicago <- mutate(chicago, pm25detrend = pm25-mean(pm25, na.rm = TRUE)) # add new col based on other col, second arrg is function
+head(select(chicago, pm25, pm25detrend))
+
+# group_by: split data frame based on categorical variables
+chicago <- mutate(chicago, tempcat = factor(1 * (tmpd > 80), labels = c("cold","hot"))) # create factor variable
+hotcold <- group_by(chicago,tempcat) # group by factor variable
+head(hotcold)
+summarize(hotcold, pm25 = mean(pm25, na.rm = TRUE), o3 = max(o3tmean2), no2 = median(no2tmean2)) # generate table of factors as rows to split function values as cols.
+
+chicago <- mutate(chicago, year = as.POSIXlt(date)$year + 1900)
+years <- group_by(chicago, year)
+summarize(years, pm25 = mean(pm25, na.rm = TRUE), o3 = max(o3tmean2), no2 = median(no2tmean2)) # count for group is n(), unique count is n_distinct(x)
+
+# %>%: chain operations
+chicago %>% mutate(month = as.POSIXlt(date)$mon + 1) %>% group_by(month) %>% summarize(pm25 = mean(pm25, na.rm = TRUE), o3 = max(o3tmean2), no2 = median(no2tmean2)) # as above but using clear chain command, reduce temp variables
+
+# summarize: generate summary statistics of different variables in the data frame, possibly within strata
+summarize(chicago, pm25 = mean(pm25, na.rm = TRUE), o3 = max(o3tmean2), no2 = median(no2tmean2)) # can summarize data into table format, useful using group_by to summarize in strata of factors
+
+# print: prevents printing lots of data to console
+tabular <- as_tibble(chicago) # converts to a tbl_df object, can be done before all dplyr operations
+tabular # printing useful in tibble, prints neatly and concisely
+
+# join: merge two data sets using ID of common name, join_all for multiple data frames
+df1 <- data.frame(id = sample(1:10), x = rnorm(10))
+df2 <- data.frame(id = sample(1:10), y = rnorm(10))
+arrange(join(df1,df2),id)
+
+df3 <- data.frame(id = sample(1:10), z = rnorm(10))
+join_all(list(df1,df2,df3)) # based on common name
+
+```
+
+### Merge data
+- Usually done by matching data sets using IDs, similar to SQL.  
+- <http://www.statmethods.net/management/merging.html>  
+- <http://en.wikipedia.org/wiki/Join_(SQL)>
+
+``` {r merge}
+
+# Get data
+if(!dir.exists("./testdir")) dir.create("./testdir")
+fileURL1 <- 
+  "https://raw.githubusercontent.com/DataScienceSpecialization/courses/refs/heads/master/03_GettingData/03_05_mergingData/data/reviews.csv"
+fileURL2 <- "https://raw.githubusercontent.com/DataScienceSpecialization/courses/refs/heads/master/03_GettingData/03_05_mergingData/data/solutions.csv"
+download.file(fileURL1,destfile="./testdir/reviews.csv",method="curl")
+download.file(fileURL2,destfile="./testdir/solutions.csv",method="curl")
+dateDownloaded <- date()
+reviews <- read.csv("./testdir/reviews.csv"); solutions <- read.csv("./testdir/solutions.csv")
+head(reviews,2)
+head(solutions,2)
+
+# merge: args x,y (dataframes),by,by.x,by.y (cols to merge by), all(include all values even if missing). Defalut to merge same name
+testingData <- merge(reviews, solutions, by.x = "solution_id", by.y = "id", all = TRUE)
+head(testingData)
+
+mergedData <- merge(reviews, solutions, all = TRUE) # merges with all intersecting data, "id", "start", "stop", "time_left", row for each of reviews and solutions
+head(mergedData)
+
+# join in dplyr, faster but less featured. Works best for multiple data sets
+
+```
+
+# Tidy data with tidyr
+- By Hadley Wickham. Tidy data is formatted in a standard way that facilitates exploration and analysis and works seamlessly with other tidy data tools. Messy data symptoms: Column headers are values, not variable names; Variables are stored in both rows and columns; A single observational unit is stored in multiple tables; Multiple types of observational units are stored in the same table; Multiple variables are stored in one column.  
+- <http://vita.had.co.nz/papers/tidy-data.pdf>  
+
+``` {r tidyr}
+
+library(tidyr); library(dplyr); library(readr)
+
+# gather: column headers that are values, not variable names
+students <- data.frame(grade = c("A","B","C","D","E"), male = c(1,5,5,5,7), female = c(5,0,2,5,4))
+# note the actual variables are grade, sex, and count
+gather(students, sex, count, -grade) # now is tidy data, each row is separate observation (grade, sex combo). sex is the key and count is the value (become col names), negative is to gather all except grades(already tidy)
+
+# separate: multiple variables are stored in one column
+students2 <- data.frame(grade = c("A","B","C","D","E"), male_1 = c(3,6,7,4,1), female_1 = c(4,4,4,0,1), male_2 = c(3,3,3,8,2), female_2 = c(4,5,8,1,7)) # variables: grade, sex, class, count
+res <- gather(students2, sex_class, count, -grade) # split variables of count
+separate(res, col = sex_class, into = c("sex","class")) # separate sex_count in same col, splits on non-alphanumeric values (i.e. _) unless specified by sep. Use %>% for tidy code
+
+# spread: variables are stored in both rows and columns
+students3 <- data.frame(name = c("Sally","Sally","Jeff","Jeff","Roger","Roger","Bree","Bree","Brian","Brian"), test = rep(c("midterm","final"),5), class1 = c("A","C",NA,NA,NA,NA,NA,NA,"B","B"), class2 = c(NA,NA,"D","E","C","A",NA,NA,NA,NA), class3 = c("B","C",NA,NA,NA,NA,"C","C",NA,NA), class4 = c(NA,NA,"A","C",NA,NA,"A","A",NA,NA), class5 = c(NA,NA,NA,NA,"B","A",NA,NA,"A","C"))
+students3 %>%
+  gather(key = class, value = grade, class1:class5 , na.rm = TRUE) %>%
+  spread(key = test , value = grade) %>%
+  mutate(class = parse_number(class)) %>%
+  print
+
+# Multiple observational units stored in same table
+students4 <- data.frame(id = c(168,168,588,588,710,710,731,731,908,908), name = c("Sally","Sally","Jeff","Jeff","Roger","Roger","Bree","Bree","Brian","Brian"), sex = c("F","F","M","M","M","M","F","F","M","M"), class = c(1,5,1,3,2,4,2,5,3,4), midterm = c("B","A","A","B","D","A","C","B","C","A"), final = c("B","C","C","C","E","C","A","A","C","A"))
+student_info <- students4 %>%
+  select(id, name, sex) %>%
+  unique %>%
+  print
+gradebook <- students4 %>%
+  select(id, class, midterm, final) %>%
+  print
+
+# single observational unit is stored in multiple tables
+passed <- data.frame(name = c("Brian","Roger","Roger","Karen"), class = c(1,2,5,4), final = c("B","A","A","A"))
+failed <- data.frame(name = c("Brian","Sally","Sally","Jeff","Jeff","Karen"), class = c(5,1,3,2,4,3), final = c("C","C","C","E","C","C"))
+failed <- mutate(failed, status = "failed")
+passed <- mutate(passed, status = "passed")
+bind_rows(passed, failed)
+
+rm(list=ls())
+
+```
